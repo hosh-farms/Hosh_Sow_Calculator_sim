@@ -1,11 +1,3 @@
-Perfect. Here’s the final ready-to-run Streamlit code with all your requested updates:
-	•	Growers are sold monthly once they reach market weight.
-	•	Sow cost is per sow, not total.
-	•	Piglet mortality, abortion, management commission, and interest rate are in percentages.
-	•	Sow mortality is removed.
-	•	Financial summary includes total capital, working capital till first sale, total pigs born, total pigs sold, and animals remaining in shed.
-	•	Monthly and yearly summaries are shown properly.
-
 import streamlit as st
 import pandas as pd
 
