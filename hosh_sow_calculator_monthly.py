@@ -254,6 +254,7 @@ total_capital = total_sow_cost + shed_cost_val
 monthly_profit_series = df_month['Monthly_Profit']
 cumulative_cash_flow_series = df_month['Cumulative_Cash_Flow']
 
+total_interest_paid = 0
 # Break-even month
 breakeven_month = next((m for m, c in zip(df_month['Month'], cumulative_cash_flow_series) if c >= 0), None)
 
@@ -272,9 +273,9 @@ for year in df_year.index:
     roi = ((revenue - operating_cost) / total_capital) * 100 if total_capital > 0 else 0
     roi_per_year.append(round(roi, 2))
 
-total_interest_paid = 0
 
 # inside month loop
+
 if month <= moratorium_months:
     loan_payment = loan_balance * monthly_rate
     total_interest_paid += loan_payment
