@@ -189,7 +189,7 @@ def sow_rotation_simulator(
         else:
             loan_payment = 0
         
-    return df_month, df_year, total_sow_cost, shed_cost, first_sale_cash_needed, total_pigs_sold, total_pigs_born, animals_left, cumulative_cash_flow
+    return df_month, df_year, total_sow_cost, shed_cost, first_sale_cash_needed, total_pigs_sold, total_pigs_born, animals_left, cumulative_cash_flow, total_interest_paid
 
 # -------------------------------
 # Streamlit UI
