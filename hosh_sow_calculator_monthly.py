@@ -227,9 +227,9 @@ loan_tenure_years = st.sidebar.number_input("Loan Tenure (Years)", 1, 20, 5)
 moratorium_months = st.sidebar.number_input("Moratorium Period (Months)", 0, 24, 0)
 
 # Other Fixed Costs
-medicine_cost = st.sidebar.number_input("Medicine Cost (Monthly)", 0, 50000, 1000000, 1000)
+medicine_cost = st.sidebar.number_input("Medicine Cost (Monthly)", 0, 500000, 10000, 1000)
 electricity_cost = st.sidebar.number_input("Electricity Cost (Monthly)", 0, 500000, 5000, 1000)
-land_lease = st.sidebar.number_input("Land Lease (Monthly)", 0, 50000, 1000000, 1000)
+land_lease = st.sidebar.number_input("Land Lease (Monthly)", 0, 5000000, 10000, 1000)
 
 # Simulation Duration
 months = st.sidebar.slider("Simulation Duration (Months)", 12, 120, 60, 12)
