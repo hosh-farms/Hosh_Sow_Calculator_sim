@@ -264,3 +264,19 @@ st.write(f"🐖 Total Pigs Born: {int(total_pigs_born)}")
 st.write(f"🐖 Total Pigs Sold: {int(total_pigs_sold)}")
 st.write(f"🏠 Animals Remaining in Shed: {int(animals_left)}")
 st.write(f"📊 Cumulative Cash Flow: ₹{cumulative_cash_flow:,.2f}")
+
+# -------------------------------
+# Financial Summary
+# -------------------------------
+st.subheader("Financial Summary")
+st.write(f"💰 Total Capital Invested (Shed + Sows): ₹{total_sow_cost + shed_cost_val:,.2f}")
+st.write(f"🧾 Working Capital until First Sale: ₹{first_sale_wc:,.2f}")
+st.write(f"🐖 Total Pigs Born: {int(total_pigs_born)}")
+st.write(f"🐖 Total Pigs Sold: {int(total_pigs_sold)}")
+st.write(f"🏠 Animals Remaining in Shed: {int(animals_left)}")
+st.write(f"📊 Cumulative Cash Flow: ₹{cumulative_cash_flow:,.2f}")
+
+# ROI Calculation
+total_capital = total_sow_cost + shed_cost_val + first_sale_wc
+roi_percent = (cumulative_cash_flow / total_capital) * 100 if total_capital > 0 else 0
+st.write(f"📈 ROI: {roi_percent:.2f}%")
