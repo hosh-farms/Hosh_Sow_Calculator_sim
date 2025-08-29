@@ -1,9 +1,8 @@
-
 import streamlit as st
 import pandas as pd
 
 # -------------------------------
-# Sow Rotation Simulator with monthly sold pigs and investor metrics
+# Sow Rotation Simulator
 # -------------------------------
 def sow_rotation_simulator(
     total_sows=30,
@@ -52,7 +51,6 @@ def sow_rotation_simulator(
     batches = []
     total_capital_invested = shed_cost + sow_cost
     cumulative_cash_flow = -total_capital_invested
-
     cumulative_sold_pigs = 0
 
     for month in range(1, months + 1):
@@ -84,14 +82,11 @@ def sow_rotation_simulator(
                     'sold': False
                 })
 
-        # Count piglets in lactation
         piglets_with_sow = round(sum(batch['piglets'] for batch in batches if batch['farrow_month'] <= month < batch['wean_month']), 1)
-        # Count growers
         current_growers = round(sum(batch['piglets'] for batch in batches if batch['grower_start_month'] <= month < batch['grower_end_month']), 1)
-        # Calculate grower feed
         grower_feed_cost = round(sum(batch['grower_feed_per_month'] * grower_feed_price for batch in batches if batch['grower_start_month'] <= month < batch['grower_end_month']), 1)
 
-        # Monthly sale logic (sell pigs after 6 months grower)
+        # Monthly sale logic
         sold_pigs = 0
         revenue = 0
         for batch in batches:
@@ -128,7 +123,6 @@ def sow_rotation_simulator(
             'Piglets_Born_Alive': piglets_with_sow,
             'Growers': current_growers,
             'Sold_Pigs': round(sold_pigs, 1),
-            'Cumulative_Sold_Pigs': round(cumulative_sold_pigs, 1),
             'Sows_Mated': round(sows_mated_this_month, 1),
             'Revenue': round(revenue),
             'Sow_Feed_Cost': round(sow_feed_cost),
@@ -146,23 +140,18 @@ def sow_rotation_simulator(
         })
 
     df_month = pd.DataFrame(monthly_data)
-
-    # Yearly summary as Year 1,2...
     df_year = df_month.groupby(((df_month.index) // 12) + 1).sum()
     df_year.index = [f"Year {i}" for i in df_year.index]
     df_year['Cash_Profit'] = df_year['Revenue'] - df_year['Total_Operating_Cost']
     df_year['Profit_After_Dep_Loan'] = df_year['Cash_Profit'] - df_year['Depreciation'] - df_year['Loan_EMI']
-    df_year['Total_Capital_Invested'] = total_capital_invested
-    # ROI per year
-    df_year['ROI_Percent'] = round((df_year['Profit_After_Dep_Loan'] / total_capital_invested) * 100, 1)
+    df_year['ROI_Percent'] = round((df_year['Profit_After_Dep_Loan'] / (shed_cost + sow_cost)) * 100, 1)
 
     # Remove month column for yearly summary
     if 'Month' in df_year.columns:
         df_year = df_year.drop(columns=['Month'])
 
-    cumulative_cash_flow_with_assets = cumulative_cash_flow
-    total_roi = (cumulative_cash_flow_with_assets / total_capital_invested) * 100
-    return df_month, df_year, total_capital_invested, cumulative_cash_flow_with_assets, total_roi
+    total_roi = (cumulative_cash_flow / (shed_cost + sow_cost)) * 100
+    return df_month, df_year, shed_cost + sow_cost, cumulative_cash_flow, total_roi
 
 # -------------------------------
 # Streamlit UI
