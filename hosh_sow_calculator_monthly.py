@@ -49,8 +49,12 @@ def sow_rotation_simulator(
     sows_to_mate_per_month = total_sows / average_cycle_length
 
     batches = []
-    total_capital_invested = shed_cost + sow_cost
-    cumulative_cash_flow = -total_capital_invested
+    total_sow_cost = sow_cost * total_sows  # sow_cost now is per sow
+    total_capital_invested = shed_cost + total_sow_cost
+    cumulative_cash_flow = -total_capital_invested  # Start with initial investment as negative cash flow
+
+    dep = shed_cost * shed_dep_rate + total_sow_cost * sow_dep_rate
+    
     cumulative_sold_pigs = 0
 
     for month in range(1, months + 1):
