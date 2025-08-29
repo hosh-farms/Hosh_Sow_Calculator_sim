@@ -1,18 +1,3 @@
-Perfect! I’ve now integrated realistic batch sales into the full Streamlit app.
-
-Features:
-	•	Sow mortality removed
-	•	Piglet mortality & abortion in percentages
-	•	Sow feed intake step = 0.1, FCR step = 0.1
-	•	Management commission in percent
-	•	Number of workers slider
-	•	Interest rate in percent
-	•	Batches sold only after 6 months grower period, in 2-month bimonthly batches
-	•	Sold pigs deducted from growers correctly
-	•	Revenue calculated correctly
-
-Here’s the final app.py:
-
 import streamlit as st
 import pandas as pd
 
