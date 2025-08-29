@@ -202,7 +202,7 @@ n_workers = st.sidebar.slider("Number of Workers", 0, 50, 2, 1)
 # Capital Costs
 shed_cost = st.sidebar.number_input("Shed Cost", 500000, 10000000, 1000000, 100000)
 shed_life_years = st.sidebar.number_input("Shed Life (Years)", 1, 30, 10)
-sow_cost = st.sidebar.number_input("Sow Cost (per sow)", 20000, 500000, 1050000, 100000)
+sow_cost = st.sidebar.number_input("Sow Cost (per sow)", 20000, 500000, 35000, 100000)
 sow_life_years = st.sidebar.number_input("Sow Life (Years)", 1, 10, 4)
 
 # Loan
