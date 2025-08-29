@@ -255,28 +255,39 @@ st.dataframe(df_month.drop(columns=['Month']))
 st.subheader("Yearly Summary")
 st.dataframe(df_year)
 # -------------------------------
-# Financial Summary
+# Financial Summary with Break-even
 # -------------------------------
 st.subheader("Financial Summary")
-st.write(f"💰 Total Capital Invested (Shed + Sows): ₹{total_sow_cost + shed_cost_val:,.2f}")
-st.write(f"🧾 Working Capital until First Sale: ₹{first_sale_wc:,.2f}")
-st.write(f"🐖 Total Pigs Born: {int(total_pigs_born)}")
-st.write(f"🐖 Total Pigs Sold: {int(total_pigs_sold)}")
-st.write(f"🏠 Animals Remaining in Shed: {int(animals_left)}")
-st.write(f"📊 Cumulative Cash Flow: ₹{cumulative_cash_flow:,.2f}")
 
-# -------------------------------
-# Financial Summary
-# -------------------------------
-st.subheader("Financial Summary")
-st.write(f"💰 Total Capital Invested (Shed + Sows): ₹{total_sow_cost + shed_cost_val:,.2f}")
-st.write(f"🧾 Working Capital until First Sale: ₹{first_sale_wc:,.2f}")
-st.write(f"🐖 Total Pigs Born: {int(total_pigs_born)}")
-st.write(f"🐖 Total Pigs Sold: {int(total_pigs_sold)}")
-st.write(f"🏠 Animals Remaining in Shed: {int(animals_left)}")
-st.write(f"📊 Cumulative Cash Flow: ₹{cumulative_cash_flow:,.2f}")
-
-# ROI Calculation
+# Total capital includes shed, sow cost, and working capital till first sale
 total_capital = total_sow_cost + shed_cost_val + first_sale_wc
+
+# Cumulative cash flow already calculated month by month
+cumulative_cash_flow_series = df_month['Cumulative_Cash_Flow']
+
+# Find break-even month (first month where cumulative cash flow >= 0)
+breakeven_month = next((m for m, cf in zip(df_month['Month'], cumulative_cash_flow_series) if cf >= 0), None)
+
+# Profit after break-even month
+profit_after_breakeven = None
+if breakeven_month:
+    remaining_cash_flow = cumulative_cash_flow_series[cumulative_cash_flow_series.index >= (breakeven_month-1)]
+    avg_profit_after_breakeven = remaining_cash_flow.mean()
+    profit_after_breakeven = round(avg_profit_after_breakeven, 2)
+
+st.write(f"💰 Total Capital Invested (Shed + Sows + Working Capital until First Sale): ₹{total_capital:,.2f}")
+st.write(f"🐖 Total Pigs Born: {int(total_pigs_born)}")
+st.write(f"🐖 Total Pigs Sold: {int(total_pigs_sold)}")
+st.write(f"🏠 Animals Remaining in Shed: {int(animals_left)}")
+st.write(f"📊 Cumulative Cash Flow: ₹{cumulative_cash_flow:,.2f}")
+
+# ROI calculation
 roi_percent = (cumulative_cash_flow / total_capital) * 100 if total_capital > 0 else 0
 st.write(f"📈 ROI: {roi_percent:.2f}%")
+
+# Break-even info
+if breakeven_month:
+    st.write(f"⚡ Break-even Month: {breakeven_month}")
+    st.write(f"💵 Average Monthly Profit After Break-even: ₹{profit_after_breakeven:,.2f}")
+else:
+    st.write("⚠️ Break-even not achieved within the simulation period.")
