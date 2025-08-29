@@ -159,8 +159,11 @@ def sow_rotation_simulator(
 
     df_month = pd.DataFrame(monthly_data)
     df_month['Year'] = ((df_month['Month'] - 1) // 12) + 1
-    df_year = df_month.groupby('Year').sum()
-    df_year.index = [f"Year {i}" for i in df_year.index]
+  # Monthly dataframe already has 'Month' column
+    df_year = df_month.groupby((df_month['Month'] - 1) // 12).sum()
+
+# Create custom period labels
+    df_year.index = [f"Month {i*12+1} - {i*12+12}" for i in df_year.index]
     df_year['Cash_Profit'] = df_year['Revenue'] - df_year['Total_Operating_Cost']
     df_year['Profit_After_Dep_Loan'] = df_year['Cash_Profit'] - df_year['Depreciation'] - df_year['Loan_EMI']
     df_year['Total_Capital_Invested'] = total_capital_invested
