@@ -245,7 +245,49 @@ df_month, df_year, total_sow_cost, shed_cost_val, first_sale_wc, total_pigs_sold
     sow_cost, sow_life_years, loan_amount, interest_rate, loan_tenure_years,
     moratorium_months, medicine_cost, electricity_cost, land_lease, months
 )
+# -------------------------------
+# Breakeven, average monthly profit, and ROI calculations
+# -------------------------------
+monthly_profit_series = df_month['Monthly_Profit']
+cumulative_cash_flow_series = df_month['Cumulative_Cash_Flow']
 
+# Break-even month
+breakeven_month = next((m for m, c in zip(df_month['Month'], cumulative_cash_flow_series) if c >= 0), None)
+
+# Average monthly profit after break-even
+if breakeven_month:
+    remaining_monthly_profit = monthly_profit_series[df_month['Month'] >= breakeven_month]
+    avg_profit_after_breakeven = round(remaining_monthly_profit.mean(), 2)
+else:
+    avg_profit_after_breakeven = 0
+
+# ROI per year
+roi_per_year = []
+for year in df_year.index:
+    revenue = df_year.loc[year, 'Revenue']
+    operating_cost = df_year.loc[year, 'Total_Operating_Cost']
+    roi = ((revenue - operating_cost) / total_capital) * 100 if total_capital > 0 else 0
+    roi_per_year.append(round(roi, 2))
+
+# -------------------------------
+# Display in Streamlit
+# -------------------------------
+st.subheader("Financial Summary")
+st.write(f"Total Capital Invested: ₹{total_capital:,.2f}")
+st.write(f"Working Capital till First Sale: ₹{first_sale_wc:,.2f}")
+st.write(f"Total Pigs Born: {total_pigs_born}")
+st.write(f"Total Pigs Sold: {total_pigs_sold}")
+st.write(f"Animals Remaining in Shed: {animals_left}")
+st.write(f"Break-even Month: {breakeven_month}")
+st.write(f"Average Monthly Profit after Break-even: ₹{avg_profit_after_breakeven:,.2f}")
+
+st.write("ROI per Year:")
+for year_label, roi_val in zip(df_year.index, roi_per_year):
+    st.write(f"{year_label}: {roi_val}%")
+
+# Overall ROI
+overall_roi = (cumulative_cash_flow / total_capital) * 100 if total_capital > 0 else 0
+st.write(f"Overall ROI: {overall_roi:.2f}%")
 # -------------------------------
 # Display
 # -------------------------------
