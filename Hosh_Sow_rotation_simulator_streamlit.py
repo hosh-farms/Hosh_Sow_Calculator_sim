@@ -253,6 +253,3 @@ st.subheader("Financial Summary")
 st.write(f"Total Capital Invested: ₹{invested:,.2f}")
 st.write(f"Cumulative Cash Flow: ₹{cum_cf:,.2f}")
 
-
-
-!pip install streamlit pandas
