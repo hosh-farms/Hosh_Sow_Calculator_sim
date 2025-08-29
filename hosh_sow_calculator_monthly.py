@@ -176,20 +176,26 @@ def sow_rotation_simulator(
     animals_left = sum(batch['piglets'] for batch in batches if not batch['sold'] and batch['grower_end_month'] > months)
     total_interest_paid = 0
 
+    loan_balance = loan_amount
+    total_interest_paid = 0
+    
     for month in range(1, months + 1):
+        monthly_interest = loan_balance * monthly_rate
+    
         if month <= moratorium_months:
-            interest = loan_balance * monthly_rate
+            # Interest accrues but no EMI paid
+            loan_balance += monthly_interest  # capitalize interest
             loan_payment = 0
         elif month <= total_months:
-            interest = loan_balance * monthly_rate
-            principal = emi - interest
+            # EMI payment starts
+            principal = emi - monthly_interest
             loan_balance -= principal
             loan_payment = emi
         else:
-            interest = 0
             loan_payment = 0
+            monthly_interest = 0
     
-        total_interest_paid += interest
+        total_interest_paid += monthly_interest
         
     return df_month, df_year, total_sow_cost, shed_cost, first_sale_cash_needed, total_pigs_sold, total_pigs_born, animals_left, cumulative_cash_flow, total_interest_paid
 
