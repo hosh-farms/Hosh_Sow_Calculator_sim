@@ -33,9 +33,7 @@ def sow_rotation_simulator(
     land_lease=10000,
     months=60
 ):
-    current_sows = total_sows
     monthly_data = []
-
     shed_dep_rate = 1 / (shed_life_years * 12)
     sow_dep_rate = 1 / (sow_life_years * 12)
 
@@ -55,7 +53,7 @@ def sow_rotation_simulator(
     cumulative_cash_flow = -total_capital_invested
 
     for month in range(1, months + 1):
-        sow_feed_cost = current_sows * sow_feed_intake * 30 * sow_feed_price
+        sow_feed_cost = total_sows * sow_feed_intake * 30 * sow_feed_price
         staff_cost = supervisor_salary + n_workers * worker_salary
         mgmt_fixed = management_fee
 
@@ -100,7 +98,6 @@ def sow_rotation_simulator(
         # Bimonthly sale logic
         if month >= 13 and (month - 13) % 2 == 0 and ready_for_sale_batches:
             pigs_sold_this_period = 0
-            batches_sold_ids = []
             sale_period_start = month - 1
             sale_period_end = month
 
@@ -111,7 +108,6 @@ def sow_rotation_simulator(
                 pigs_sold_batch = batch['piglets']
                 pigs_sold_this_period += pigs_sold_batch
                 batch['sold'] = True
-                batches_sold_ids.append(batch['batch_id'])
 
             revenue += pigs_sold_this_period * final_weight * sale_price
             sold_pigs = pigs_sold_this_period
@@ -158,16 +154,26 @@ def sow_rotation_simulator(
         })
 
     df_month = pd.DataFrame(monthly_data)
-    df_month['Year'] = ((df_month['Month'] - 1) // 12) + 1
-  # Monthly dataframe already has 'Month' column
-    df_year = df_month.groupby((df_month['Month'] - 1) // 12).sum()
 
-# Create custom period labels
-    df_year.index = [f"Month {i*12+1} - {i*12+12}" for i in df_year.index]
+    # -------------------------------
+    # Yearly / Period Summary
+    # -------------------------------
+    periods = (df_month['Month'] - 1) // 12
+    df_year = df_month.groupby(periods).sum()
+
+    # Dynamic month range labels
+    month_ranges = []
+    for i in df_year.index:
+        start_month = i * 12 + 1
+        end_month = min((i + 1) * 12, months)
+        month_ranges.append(f"Month {start_month} - {end_month}")
+    df_year.index = month_ranges
+
     df_year['Cash_Profit'] = df_year['Revenue'] - df_year['Total_Operating_Cost']
     df_year['Profit_After_Dep_Loan'] = df_year['Cash_Profit'] - df_year['Depreciation'] - df_year['Loan_EMI']
     df_year['Total_Capital_Invested'] = total_capital_invested
     cumulative_cash_flow_with_assets = cumulative_cash_flow
+
     return df_month, df_year, total_capital_invested, cumulative_cash_flow_with_assets
 
 # -------------------------------
