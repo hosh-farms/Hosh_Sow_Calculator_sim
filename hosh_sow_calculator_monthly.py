@@ -272,7 +272,20 @@ for year in df_year.index:
     roi = ((revenue - operating_cost) / total_capital) * 100 if total_capital > 0 else 0
     roi_per_year.append(round(roi, 2))
 
+total_interest_paid = 0
 
+# inside month loop
+if month <= moratorium_months:
+    loan_payment = loan_balance * monthly_rate
+    total_interest_paid += loan_payment
+elif month <= total_months:
+    interest = loan_balance * monthly_rate
+    principal = emi - interest
+    loan_balance -= principal
+    loan_payment = emi
+    total_interest_paid += interest
+else:
+    loan_payment = 0
 # -------------------------------
 # Display Monthly & Yearly Summaries
 # -------------------------------
@@ -317,6 +330,7 @@ st.write(f"Profit After Break-even Month (cumulative): ₹{profit_after_break_ev
 st.write(f"Average Monthly Profit after Break-even: ₹{avg_profit_after_breakeven:,.2f}")
 # st.write(f"Cumulative Cash Flow: ₹{cumulative_cash_flow:,.2f}")
 st.write(f"Total ROI: {total_roi_pct:.2f}%")
+st.write(f"Total Interest Paid Over Loan Tenure: ₹{total_interest_paid:,.0f}")
 # st.write("ROI per Year:")
 # for year_label, roi_val in zip(df_year.index, roi_per_year):
 #     st.write(f"{year_label}: {roi_val}%")
