@@ -215,7 +215,13 @@ sow_life_years = st.sidebar.number_input("Sow Life (Years)", 1, 12, 4)
 
 # Loan
 loan_amount = st.sidebar.number_input("Loan Amount", 0, 100000000, 0, 100000)
-interest_rate_pct = st.sidebar.slider("Interest Rate (%)", 0.0, 20.0, 10.0, 0.1)
+interest_rate_pct = st.sidebar.slider(
+    "Interest Rate (%)",
+    min_value=0.0,
+    max_value=20.0,
+    value=10.0,
+    step=1.0
+)
 interest_rate = interest_rate_pct / 100
 loan_tenure_years = st.sidebar.number_input("Loan Tenure (Years)", 1, 20, 5)
 moratorium_months = st.sidebar.number_input("Moratorium Period (Months)", 0, 24, 0)
