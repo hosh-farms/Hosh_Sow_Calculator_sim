@@ -207,7 +207,7 @@ abortion_rate = st.sidebar.slider("Abortion Rate", 0.0, 0.5, 0.03, 0.001)
 
 # Feed & Sale
 sow_feed_price = st.sidebar.number_input("Sow Feed Price (₹/kg)", 0, 50, 32)
-sow_feed_intake = st.sidebar.slider("Sow Feed Intake (kg/day)", 0.0, 5.0, 2.8)
+sow_feed_intake = st.sidebar.slider("Sow Feed Intake (kg/day)", 0, 8, 2.8)
 grower_feed_price = st.sidebar.number_input("Grower Feed Price (₹/kg)", 0, 50, 28)
 fcr = st.sidebar.slider("Feed Conversion Ratio (FCR)", 2.0, 4.0, 3.2)
 final_weight = st.sidebar.number_input("Final Weight (kg)", 80, 120, 105)
