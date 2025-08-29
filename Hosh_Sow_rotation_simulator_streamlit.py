@@ -201,7 +201,7 @@ st.sidebar.header("Simulation Parameters")
 # Sow & Piglet
 total_sows = st.sidebar.slider("Total Sows", 10, 50, 30, 5)
 piglets_per_cycle = st.sidebar.slider("Piglets per Cycle", 5, 20, 8)
-# sow_mortality = st.sidebar.slider("Sow Mortality Rate", 0.0, 0.5, 0.033, 0.001)
+sow_mortality = st.sidebar.slider("Sow Mortality Rate", 0.0, 0.5, 0.033, 0.001)
 piglet_mortality = st.sidebar.slider("Piglet Mortality Rate", 0.0, 0.5, 0.03, 0.001)
 abortion_rate = st.sidebar.slider("Abortion Rate", 0.0, 0.5, 0.03, 0.001)
 
