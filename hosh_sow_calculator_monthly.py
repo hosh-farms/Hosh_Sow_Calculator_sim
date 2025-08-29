@@ -290,9 +290,12 @@ st.subheader("Financial Summary")
 # Total capital
 total_capital = total_sow_cost + shed_cost_val
 
-# ROI %
-roi_total = (cumulative_cash_flow / total_capital) * 100 if total_capital > 0 else 0
+# # ROI %
+# roi_total = (cumulative_cash_flow / total_capital) * 100 if total_capital > 0 else 0
 
+
+# Total ROI over simulation
+total_roi_pct = (cumulative_cash_flow / total_capital) * 100 if total_capital > 0 else 0
 # Average monthly profit
 average_monthly_profit = df_month['Monthly_Profit'].mean()
 
@@ -312,7 +315,8 @@ st.write(f"Average Monthly Profit: ₹{average_monthly_profit:,.0f}")
 st.write(f"Break-even Month: {break_even_month}")
 st.write(f"Profit After Break-even Month (cumulative): ₹{profit_after_break_even.sum():,.0f}")
 st.write(f"Average Monthly Profit after Break-even: ₹{avg_profit_after_breakeven:,.2f}")
-
-st.write("ROI per Year:")
-for year_label, roi_val in zip(df_year.index, roi_per_year):
-    st.write(f"{year_label}: {roi_val}%")
+# st.write(f"Cumulative Cash Flow: ₹{cumulative_cash_flow:,.2f}")
+st.write(f"Total ROI: {total_roi_pct:.2f}%")
+# st.write("ROI per Year:")
+# for year_label, roi_val in zip(df_year.index, roi_per_year):
+#     st.write(f"{year_label}: {roi_val}%")
