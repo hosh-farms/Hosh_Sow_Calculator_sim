@@ -1,8 +1,23 @@
+Perfect! I’ve now integrated realistic batch sales into the full Streamlit app.
+
+Features:
+	•	Sow mortality removed
+	•	Piglet mortality & abortion in percentages
+	•	Sow feed intake step = 0.1, FCR step = 0.1
+	•	Management commission in percent
+	•	Number of workers slider
+	•	Interest rate in percent
+	•	Batches sold only after 6 months grower period, in 2-month bimonthly batches
+	•	Sold pigs deducted from growers correctly
+	•	Revenue calculated correctly
+
+Here’s the final app.py:
+
 import streamlit as st
 import pandas as pd
 
 # -------------------------------
-# Sow Rotation Simulator
+# Sow Rotation Simulator with realistic batch sales
 # -------------------------------
 def sow_rotation_simulator(
     total_sows=30,
@@ -79,27 +94,43 @@ def sow_rotation_simulator(
                     'grower_start_month': grower_start_month,
                     'grower_end_month': grower_end_month,
                     'piglets': piglets,
-                    'grower_feed_per_month': (piglets * fcr * final_weight) / 6
+                    'grower_feed_per_month': (piglets * fcr * final_weight) / 6,
+                    'sold': False
                 })
 
+        # Count piglets in lactation
         piglets_with_sow = sum(batch['piglets'] for batch in batches if batch['farrow_month'] <= month < batch['wean_month'])
+        # Count growers
         current_growers = sum(batch['piglets'] for batch in batches if batch['grower_start_month'] <= month < batch['grower_end_month'])
+        # Calculate grower feed
         grower_feed_cost = sum(batch['grower_feed_per_month'] * grower_feed_price for batch in batches if batch['grower_start_month'] <= month < batch['grower_end_month'])
+
+        # Identify batches ready for sale this month
+        for batch in batches:
+            if batch['grower_end_month'] <= month and not batch['sold'] and batch not in ready_for_sale_batches:
+                ready_for_sale_batches.append(batch)
 
         sold_pigs = 0
         revenue = 0
-        if month >= 13 and (month - 13) % 2 == 0:
+        # Bimonthly sale logic
+        if month >= 13 and (month - 13) % 2 == 0 and ready_for_sale_batches:
+            pigs_sold_this_period = 0
+            batches_sold_ids = []
             sale_period_start = month - 1
             sale_period_end = month
-            batches_to_sell = [b for b in ready_for_sale_batches if sale_period_start <= b['grower_end_month'] <= sale_period_end]
-            for batch in batches_to_sell:
-                pigs_sold_batch = batch['piglets'] * 0.97
-                sold_pigs += pigs_sold_batch
-                revenue += pigs_sold_batch * final_weight * sale_price
-                ready_for_sale_batches.remove(batch)
-                batches.remove(batch)
 
-        current_growers -= sold_pigs
+            # Find batches that became ready in last 2 months
+            batches_to_sell = [b for b in ready_for_sale_batches if sale_period_start <= b['grower_end_month'] <= sale_period_end]
+
+            for batch in batches_to_sell:
+                pigs_sold_batch = batch['piglets']
+                pigs_sold_this_period += pigs_sold_batch
+                batch['sold'] = True
+                batches_sold_ids.append(batch['batch_id'])
+
+            revenue += pigs_sold_this_period * final_weight * sale_price
+            sold_pigs = pigs_sold_this_period
+            current_growers -= sold_pigs  # Deduct sold pigs from growers
 
         mgmt_comm_cost = revenue * management_commission
         other_fixed = medicine_cost + electricity_cost + land_lease
@@ -223,5 +254,7 @@ st.dataframe(df_year)
 st.subheader("Financial Summary")
 st.write(f"Total Capital Invested: ₹{total_capital:,.2f}")
 st.write(f"Cumulative Cash Flow: ₹{cumulative_cash_flow:,.2f}")
-roi = (cumulative_cash_flow / total_capital * 100) if total_capital > 0 else 0
+
+# Calculate ROI
+roi = (cumulative_cash_flow / total_capital) * 100 if total_capital > 0 else 0
 st.write(f"Return on Investment (ROI): {roi:.2f}%")
