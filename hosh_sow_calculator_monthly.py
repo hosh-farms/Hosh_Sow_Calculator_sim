@@ -160,8 +160,8 @@ st.title("🐷 House of Supreme Ham Simulator")
 st.sidebar.header("Simulation Parameters")
 
 # Sow & Piglet
-total_sows = st.sidebar.slider("Total Sows", 10, 200, 30, 5)
-piglets_per_cycle = st.sidebar.slider("Piglets per Cycle", 5, 15, 8)
+total_sows = st.sidebar.slider("Total Sows", 10, 500, 30, 5)
+piglets_per_cycle = st.sidebar.slider("Piglets per Cycle", 5, 30, 8)
 piglet_mortality_pct = st.sidebar.slider("Piglet Mortality (%)", 0, 50, 3, 1)
 piglet_mortality = piglet_mortality_pct / 100
 abortion_rate_pct = st.sidebar.slider("Abortion Rate (%)", 0, 50, 3, 1)
@@ -169,37 +169,37 @@ abortion_rate = abortion_rate_pct / 100
 
 # Feed & Sale
 sow_feed_price = st.sidebar.number_input("Sow Feed Price (₹/kg)", 0, 50, 32)
-sow_feed_intake = st.sidebar.slider("Sow Feed Intake (kg/day)", 0.0, 5.0, 2.8, 0.1)
+sow_feed_intake = st.sidebar.slider("Sow Feed Intake (kg/day)", 0.0, 8.0, 2.8, 0.1)
 grower_feed_price = st.sidebar.number_input("Grower Feed Price (₹/kg)", 0, 50, 28)
 fcr = st.sidebar.slider("Feed Conversion Ratio (FCR)", 2.0, 4.0, 3.2, 0.1)
-final_weight = st.sidebar.number_input("Final Weight (kg)", 80, 120, 105)
-sale_price = st.sidebar.number_input("Sale Price (₹/kg)", 100, 300, 180)
+final_weight = st.sidebar.number_input("Final Weight (kg)", 80, 200, 105)
+sale_price = st.sidebar.number_input("Sale Price (₹/kg)", 100, 600, 180)
 
 # Management
-management_fee = st.sidebar.number_input("Management Fee (Monthly)", 0, 200000, 50000)
-management_commission_pct = st.sidebar.slider("Management Commission (%)", 0, 20, 5, 1)
+management_fee = st.sidebar.number_input("Management Fee (Monthly)", 0, 1000000, 50000)
+management_commission_pct = st.sidebar.slider("Management Commission (%)", 0, 50, 5, 1)
 management_commission = management_commission_pct / 100
-supervisor_salary = st.sidebar.number_input("Supervisor Salary", 0, 50000, 25000)
-worker_salary = st.sidebar.number_input("Worker Salary", 0, 30000, 18000)
-n_workers = st.sidebar.slider("Number of Workers", 0, 10, 2, 1)
+supervisor_salary = st.sidebar.number_input("Supervisor Salary", 0, 500000, 25000)
+worker_salary = st.sidebar.number_input("Worker Salary", 0, 100000, 18000)
+n_workers = st.sidebar.slider("Number of Workers", 0, 30, 2, 1)
 
 # Capital Costs
-shed_cost = st.sidebar.number_input("Shed Cost", 500000, 5000000, 1000000, 100000)
+shed_cost = st.sidebar.number_input("Shed Cost", 500000, 50000000, 1000000, 100000)
 shed_life_years = st.sidebar.number_input("Shed Life (Years)", 1, 30, 10)
-sow_cost = st.sidebar.number_input("Sow Cost (per sow)", 500000, 3000000, 1050000, 100000)
+sow_cost = st.sidebar.number_input("Sow Cost (per sow)", 500000, 50000000, 1050000, 100000)
 sow_life_years = st.sidebar.number_input("Sow Life (Years)", 1, 10, 4)
 
 # Loan
-loan_amount = st.sidebar.number_input("Loan Amount", 0, 10000000, 0, 100000)
+loan_amount = st.sidebar.number_input("Loan Amount", 0, 100000000, 0, 100000)
 interest_rate_pct = st.sidebar.slider("Interest Rate (%)", 0, 20, 10, 1)
 interest_rate = interest_rate_pct / 100
 loan_tenure_years = st.sidebar.number_input("Loan Tenure (Years)", 1, 20, 5)
 moratorium_months = st.sidebar.number_input("Moratorium Period (Months)", 0, 24, 0)
 
 # Other Fixed Costs
-medicine_cost = st.sidebar.number_input("Medicine Cost (Monthly)", 0, 50000, 10000, 1000)
-electricity_cost = st.sidebar.number_input("Electricity Cost (Monthly)", 0, 50000, 5000, 1000)
-land_lease = st.sidebar.number_input("Land Lease (Monthly)", 0, 50000, 10000, 1000)
+medicine_cost = st.sidebar.number_input("Medicine Cost (Monthly)", 0, 1000000, 10000, 1000)
+electricity_cost = st.sidebar.number_input("Electricity Cost (Monthly)", 0, 500000, 5000, 1000)
+land_lease = st.sidebar.number_input("Land Lease (Monthly)", 0, 1000000, 10000, 1000)
 
 # Simulation Duration
 months = st.sidebar.slider("Simulation Duration (Months)", 12, 120, 60, 12)
