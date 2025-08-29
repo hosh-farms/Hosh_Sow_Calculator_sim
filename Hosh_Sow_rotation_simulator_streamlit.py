@@ -132,13 +132,7 @@ def sow_rotation_simulator(
                         batches_to_remove_permanently.append(batch)
                         break
 
-        # Handle last month
-        if month == months:
-            for batch in batches:
-                pigs_sold_batch = batch['piglets'] * 0.97
-                sold_pigs += pigs_sold_batch
-                revenue += pigs_sold_batch * final_weight * sale_price
-                batches_to_remove_permanently.append(batch)
+       
 
         for batch in batches_to_remove_permanently:
             if batch in batches:
