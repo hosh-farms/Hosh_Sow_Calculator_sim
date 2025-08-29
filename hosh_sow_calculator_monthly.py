@@ -174,7 +174,21 @@ def sow_rotation_simulator(
 
     # Total animals left in shed
     animals_left = sum(batch['piglets'] for batch in batches if not batch['sold'] and batch['grower_end_month'] > months)
+    total_interest_paid = 0
 
+    for month in range(1, months + 1):
+        if month <= moratorium_months:
+            loan_payment = loan_balance * monthly_rate
+            total_interest_paid += loan_payment
+        elif month <= total_months:
+            interest = loan_balance * monthly_rate
+            principal = emi - interest
+            loan_balance -= principal
+            loan_payment = emi
+            total_interest_paid += interest
+        else:
+            loan_payment = 0
+        
     return df_month, df_year, total_sow_cost, shed_cost, first_sale_cash_needed, total_pigs_sold, total_pigs_born, animals_left, cumulative_cash_flow
 
 # -------------------------------
@@ -254,7 +268,7 @@ total_capital = total_sow_cost + shed_cost_val
 monthly_profit_series = df_month['Monthly_Profit']
 cumulative_cash_flow_series = df_month['Cumulative_Cash_Flow']
 
-total_interest_paid = 0
+
 # Break-even month
 breakeven_month = next((m for m, c in zip(df_month['Month'], cumulative_cash_flow_series) if c >= 0), None)
 
@@ -273,20 +287,6 @@ for year in df_year.index:
     roi = ((revenue - operating_cost) / total_capital) * 100 if total_capital > 0 else 0
     roi_per_year.append(round(roi, 2))
 
-
-# inside month loop
-
-if month <= moratorium_months:
-    loan_payment = loan_balance * monthly_rate
-    total_interest_paid += loan_payment
-elif month <= total_months:
-    interest = loan_balance * monthly_rate
-    principal = emi - interest
-    loan_balance -= principal
-    loan_payment = emi
-    total_interest_paid += interest
-else:
-    loan_payment = 0
 # -------------------------------
 # Display Monthly & Yearly Summaries
 # -------------------------------
