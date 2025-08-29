@@ -272,25 +272,7 @@ for year in df_year.index:
     roi = ((revenue - operating_cost) / total_capital) * 100 if total_capital > 0 else 0
     roi_per_year.append(round(roi, 2))
 
-# -------------------------------
-# Display in Streamlit
-# -------------------------------
-st.subheader("Financial Summary")
-st.write(f"Total Capital Invested: ₹{total_capital:,.2f}")
-st.write(f"Working Capital till First Sale: ₹{first_sale_wc:,.2f}")
-st.write(f"Total Pigs Born: {total_pigs_born}")
-st.write(f"Total Pigs Sold: {total_pigs_sold}")
-st.write(f"Animals Remaining in Shed: {animals_left}")
-st.write(f"Break-even Month: {breakeven_month}")
-st.write(f"Average Monthly Profit after Break-even: ₹{avg_profit_after_breakeven:,.2f}")
 
-st.write("ROI per Year:")
-for year_label, roi_val in zip(df_year.index, roi_per_year):
-    st.write(f"{year_label}: {roi_val}%")
-
-# Overall ROI
-overall_roi = (cumulative_cash_flow / total_capital) * 100 if total_capital > 0 else 0
-st.write(f"Overall ROI: {overall_roi:.2f}%")
 # -------------------------------
 # Display Monthly & Yearly Summaries
 # -------------------------------
@@ -329,3 +311,8 @@ st.write(f"ROI on Total Capital: {roi_total:.2f}%")
 st.write(f"Average Monthly Profit: ₹{average_monthly_profit:,.0f}")
 st.write(f"Break-even Month: {break_even_month}")
 st.write(f"Profit After Break-even Month (cumulative): ₹{profit_after_break_even.sum():,.0f}")
+st.write(f"Average Monthly Profit after Break-even: ₹{avg_profit_after_breakeven:,.2f}")
+
+st.write("ROI per Year:")
+for year_label, roi_val in zip(df_year.index, roi_per_year):
+    st.write(f"{year_label}: {roi_val}%")
