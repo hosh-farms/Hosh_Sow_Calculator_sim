@@ -178,16 +178,18 @@ def sow_rotation_simulator(
 
     for month in range(1, months + 1):
         if month <= moratorium_months:
-            loan_payment = loan_balance * monthly_rate
-            total_interest_paid += loan_payment
+            interest = loan_balance * monthly_rate
+            loan_payment = 0
         elif month <= total_months:
             interest = loan_balance * monthly_rate
             principal = emi - interest
             loan_balance -= principal
             loan_payment = emi
-            total_interest_paid += interest
         else:
+            interest = 0
             loan_payment = 0
+    
+        total_interest_paid += interest
         
     return df_month, df_year, total_sow_cost, shed_cost, first_sale_cash_needed, total_pigs_sold, total_pigs_born, animals_left, cumulative_cash_flow, total_interest_paid
 
