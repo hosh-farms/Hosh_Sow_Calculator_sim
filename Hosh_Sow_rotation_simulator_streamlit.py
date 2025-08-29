@@ -1,6 +1,5 @@
 import streamlit as st
 import pandas as pd
-import numpy as np
 
 # -------------------------------
 # Sow Rotation Simulator
@@ -37,11 +36,9 @@ def sow_rotation_simulator(
     current_sows = total_sows
     monthly_data = []
 
-    # Depreciation
     shed_dep_rate = 1 / (shed_life_years * 12)
     sow_dep_rate = 1 / (sow_life_years * 12)
 
-    # Loan calculation
     total_months = loan_tenure_years * 12
     monthly_rate = interest_rate / 12
     emi = 0
@@ -49,7 +46,6 @@ def sow_rotation_simulator(
         emi = loan_amount * monthly_rate * (1 + monthly_rate)**total_months / ((1 + monthly_rate)**total_months - 1)
     loan_balance = loan_amount
 
-    # Average sow cycle (months)
     average_cycle_length = 3.8 + 1.3 + 0.33
     sows_to_mate_per_month = total_sows / average_cycle_length
 
@@ -64,15 +60,12 @@ def sow_rotation_simulator(
         mgmt_fixed = management_fee
 
         sows_mated_this_month = 0
-        sows_aborted_this_month = 0
 
-        # Step 1: Mate sows starting month 2
+        # Mate sows starting month 2
         if month >= 2:
             sows_to_mate = sows_to_mate_per_month
             sows_mated_this_month = sows_to_mate
             sows_pregnant = sows_to_mate * (1 - abortion_rate)
-            sows_aborted_this_month = sows_to_mate - sows_pregnant
-
             if sows_pregnant > 0:
                 farrow_month = month + 4
                 wean_month = farrow_month + 1
@@ -89,16 +82,10 @@ def sow_rotation_simulator(
                     'grower_feed_per_month': (piglets * fcr * final_weight) / 6
                 })
 
-        # Step 2: Count piglets in lactation
         piglets_with_sow = sum(batch['piglets'] for batch in batches if batch['farrow_month'] <= month < batch['wean_month'])
-
-        # Step 3: Count growers before sales
         current_growers = sum(batch['piglets'] for batch in batches if batch['grower_start_month'] <= month < batch['grower_end_month'])
-
-        # Step 4: Grower feed
         grower_feed_cost = sum(batch['grower_feed_per_month'] * grower_feed_price for batch in batches if batch['grower_start_month'] <= month < batch['grower_end_month'])
 
-        # Step 5: Bimonthly sales
         sold_pigs = 0
         revenue = 0
         if month >= 13 and (month - 13) % 2 == 0:
@@ -112,7 +99,6 @@ def sow_rotation_simulator(
                 ready_for_sale_batches.remove(batch)
                 batches.remove(batch)
 
-        # Step 6: Update growers after sales
         current_growers -= sold_pigs
 
         mgmt_comm_cost = revenue * management_commission
@@ -120,7 +106,6 @@ def sow_rotation_simulator(
         total_operating_cost = sow_feed_cost + grower_feed_cost + staff_cost + mgmt_fixed + mgmt_comm_cost + other_fixed
         dep = shed_cost * shed_dep_rate + sow_cost * sow_dep_rate
 
-        # Loan EMI
         if month <= moratorium_months:
             loan_payment = loan_balance * monthly_rate
         elif month <= total_months:
@@ -132,7 +117,6 @@ def sow_rotation_simulator(
             loan_payment = 0
 
         monthly_profit = revenue - total_operating_cost - dep - loan_payment
-        monthly_profit_percentage = (monthly_profit / revenue * 100) if revenue > 0 else 0
         monthly_cash_flow = revenue - total_operating_cost - loan_payment
         cumulative_cash_flow += monthly_cash_flow
 
@@ -153,7 +137,6 @@ def sow_rotation_simulator(
             'Depreciation': round(dep),
             'Loan_EMI': round(loan_payment),
             'Monthly_Profit': round(monthly_profit),
-            'Monthly_Profit_%': monthly_profit_percentage,
             'Monthly_Cash_Flow': round(monthly_cash_flow),
             'Cumulative_Cash_Flow': round(cumulative_cash_flow)
         })
@@ -176,12 +159,9 @@ st.sidebar.header("Simulation Parameters")
 
 # Sow & Piglet
 total_sows = st.sidebar.slider("Total Sows", 10, 200, 30, 5)
-
 piglets_per_cycle = st.sidebar.slider("Piglets per Cycle", 5, 15, 8)
-
 piglet_mortality_pct = st.sidebar.slider("Piglet Mortality (%)", 0, 50, 3, 1)
 piglet_mortality = piglet_mortality_pct / 100
-
 abortion_rate_pct = st.sidebar.slider("Abortion Rate (%)", 0, 50, 3, 1)
 abortion_rate = abortion_rate_pct / 100
 
@@ -221,3 +201,27 @@ land_lease = st.sidebar.number_input("Land Lease (Monthly)", 0, 50000, 10000, 10
 
 # Simulation Duration
 months = st.sidebar.slider("Simulation Duration (Months)", 12, 120, 60, 12)
+
+# -------------------------------
+# Run Simulator
+# -------------------------------
+df_month, df_year, total_capital, cumulative_cash_flow = sow_rotation_simulator(
+    total_sows, piglets_per_cycle, piglet_mortality, abortion_rate,
+    sow_feed_price, sow_feed_intake, grower_feed_price, fcr,
+    final_weight, sale_price, management_fee, management_commission,
+    supervisor_salary, worker_salary, n_workers, shed_cost, shed_life_years,
+    sow_cost, sow_life_years, loan_amount, interest_rate, loan_tenure_years,
+    moratorium_months, medicine_cost, electricity_cost, land_lease, months
+)
+
+st.subheader("Monthly Summary")
+st.dataframe(df_month)
+
+st.subheader("Yearly Summary")
+st.dataframe(df_year)
+
+st.subheader("Financial Summary")
+st.write(f"Total Capital Invested: ₹{total_capital:,.2f}")
+st.write(f"Cumulative Cash Flow: ₹{cumulative_cash_flow:,.2f}")
+roi = (cumulative_cash_flow / total_capital * 100) if total_capital > 0 else 0
+st.write(f"Return on Investment (ROI): {roi:.2f}%")
