@@ -245,6 +245,9 @@ df_month, df_year, total_sow_cost, shed_cost_val, first_sale_wc, total_pigs_sold
     sow_cost, sow_life_years, loan_amount, interest_rate, loan_tenure_years,
     moratorium_months, medicine_cost, electricity_cost, land_lease, months
 )
+
+# Define total capital for financial calculations
+total_capital = total_sow_cost + shed_cost_val
 # -------------------------------
 # Breakeven, average monthly profit, and ROI calculations
 # -------------------------------
