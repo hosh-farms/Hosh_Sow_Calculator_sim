@@ -65,10 +65,11 @@ def sow_rotation_simulator(
         staff_cost = supervisor_salary + n_workers * worker_salary
         mgmt_fixed = management_fee
 
-        # Mate sows
+        sows_crossed = 0
         if month >= 2:
             sows_to_mate = sows_to_mate_per_month
             sows_pregnant = sows_to_mate * (1 - abortion_rate)
+            sows_crossed = sows_to_mate  # track how many sows were crossed this month
             if sows_pregnant > 0:
                 farrow_month = month + 4
                 wean_month = farrow_month + 1
@@ -86,6 +87,7 @@ def sow_rotation_simulator(
                     'grower_feed_per_month': (piglets * fcr * final_weight) / 6,
                     'sold': False
                 })
+      
 
         # Count piglets in lactation
         piglets_with_sow = sum(batch['piglets'] for batch in batches if batch['farrow_month'] <= month < batch['wean_month'])
@@ -145,21 +147,22 @@ def sow_rotation_simulator(
 
         monthly_data.append({
             'Month': month,
+            'Sows_Crossed': round(sows_crossed),
             'Piglets_Born_Alive': piglets_with_sow,
             'Growers': current_growers,
             'Sold_Pigs': sold_pigs,
-            'Revenue': round(revenue),
             'Sow_Feed_Cost': round(sow_feed_cost),
             'Grower_Feed_Cost': round(grower_feed_cost),
             'Staff_Cost': round(staff_cost),
+            'Other_Fixed_Costs': round(other_fixed),
             'Mgmt_Fee': round(mgmt_fixed),
             'Mgmt_Comm': round(mgmt_comm_cost),
-            'Other_Fixed_Costs': round(other_fixed),
             'Total_Operating_Cost': round(total_operating_cost),
-            'Depreciation': round(dep),
+            'Revenue': round(revenue),
             'Loan_EMI': round(loan_payment),
-            'Monthly_Profit': round(monthly_profit),
+            'Depreciation': round(dep),
             'Monthly_Cash_Flow': round(monthly_cash_flow),
+            'Monthly_Profit': round(monthly_profit),
             'Cumulative_Cash_Flow': round(cumulative_cash_flow)
         })
 
@@ -171,6 +174,8 @@ def sow_rotation_simulator(
 
     df_year['Cash_Profit'] = df_year['Revenue'] - df_year['Total_Operating_Cost']
     df_year['Profit_After_Dep_Loan'] = df_year['Cash_Profit'] - df_year['Depreciation'] - df_year['Loan_EMI']
+
+    df_year['Total_Crossings'] = df_month.groupby(((df_month['Month']-1)//12)*12)['Sows_Crossed'].sum().values
 
     # Total animals left in shed
     animals_left = sum(batch['piglets'] for batch in batches if not batch['sold'] and batch['grower_end_month'] > months)
@@ -327,19 +332,21 @@ break_even_month = cum_profit[cum_profit >= 0].index[0] + 1 if any(cum_profit >=
 profit_after_break_even = cum_profit.iloc[break_even_month-1:] - cum_profit.iloc[break_even_month-1]
 
 # Display summary
-st.write(f"Total Capital Invested: ₹{total_capital:,.2f}")
-st.write(f"Working Capital till First Sale: ₹{first_sale_wc:,.2f}")
+st.write(f"Total Crossings Done: {df_month['Sows_Crossed'].sum():,.0f}")
 st.write(f"Total Pigs Born: {total_pigs_born:.0f}")
 st.write(f"Total Pigs Sold: {total_pigs_sold:.0f}")
 st.write(f"Animals Remaining in Shed: {animals_left:.0f}")
-# st.write(f"ROI on Total Capital: {roi_total:.2f}%")
-st.write(f"Average Monthly Profit: ₹{average_monthly_profit:,.0f}")
+st.write(f"Total Capital Invested: ₹{total_capital:,.2f}")
+st.write(f"Working Capital till First Sale: ₹{first_sale_wc:,.2f}")
 st.write(f"Break-even Month: {break_even_month}")
 st.write(f"Profit After Break-even Month (cumulative): ₹{profit_after_break_even.sum():,.0f}")
+# st.write(f"ROI on Total Capital: {roi_total:.2f}%")
+st.write(f"Average Monthly Profit: ₹{average_monthly_profit:,.0f}")
 st.write(f"Average Monthly Profit after Break-even: ₹{avg_profit_after_breakeven:,.2f}")
 # st.write(f"Cumulative Cash Flow: ₹{cumulative_cash_flow:,.2f}")
-st.write(f"Total ROI: {total_roi_pct:.2f}%")
 st.write(f"Total Interest Paid Over Loan Tenure: ₹{total_interest_paid:,.0f}")
+st.write(f"Total ROI: {total_roi_pct:.2f}%")
+
 # st.write("ROI per Year:")
 # for year_label, roi_val in zip(df_year.index, roi_per_year):
 #     st.write(f"{year_label}: {roi_val}%")
