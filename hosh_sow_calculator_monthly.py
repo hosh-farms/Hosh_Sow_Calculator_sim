@@ -204,6 +204,11 @@ def sow_rotation_simulator(
         
     return df_month, df_year, total_sow_cost, shed_cost, first_sale_cash_needed, total_pigs_sold, total_pigs_born, animals_left, cumulative_cash_flow, total_interest_paid
 
+import streamlit as st
+import pandas as pd
+
+# (keep your sow_rotation_simulator function as-is above...)
+
 # -------------------------------
 # Streamlit UI
 # -------------------------------
@@ -212,51 +217,45 @@ st.sidebar.header("Simulation Parameters")
 
 # Sow & Piglet
 total_sows = st.sidebar.slider("Total Sows", 10, 500, 30, 5)
-piglets_per_cycle = st.sidebar.slider("Piglets per Cycle", 5, 30, 9)
+piglets_per_cycle = st.sidebar.slider("Piglets per Cycle", 5, 30, 9, 1)
 piglet_mortality_pct = st.sidebar.slider("Piglet Mortality (%)", 0, 50, 3, 1)
 piglet_mortality = piglet_mortality_pct / 100
 abortion_rate_pct = st.sidebar.slider("Abortion Rate (%)", 0, 50, 3, 1)
 abortion_rate = abortion_rate_pct / 100
 
 # Feed & Sale
-sow_feed_price = st.sidebar.number_input("Sow Feed Price (₹/kg)", 0, 50, 32)
+sow_feed_price = st.sidebar.slider("Sow Feed Price (₹/kg)", 0, 50, 32, 1)
 sow_feed_intake = st.sidebar.slider("Sow Feed Intake (kg/day)", 0.0, 8.0, 2.8, 0.1)
-grower_feed_price = st.sidebar.number_input("Grower Feed Price (₹/kg)", 0, 50, 28)
+grower_feed_price = st.sidebar.slider("Grower Feed Price (₹/kg)", 0, 50, 28, 1)
 fcr = st.sidebar.slider("Feed Conversion Ratio (FCR)", 2.0, 4.0, 3.2, 0.1)
-final_weight = st.sidebar.number_input("Final Weight (kg)", 80, 250, 105)
-sale_price = st.sidebar.number_input("Sale Price (₹/kg)", 100, 600, 180)
+final_weight = st.sidebar.slider("Final Weight (kg)", 80, 250, 105, 5)
+sale_price = st.sidebar.slider("Sale Price (₹/kg)", 100, 600, 180, 10)
 
 # Management
-management_fee = st.sidebar.number_input("Management Fee (Monthly)", 0, 1000000, 50000)
+management_fee = st.sidebar.slider("Management Fee (Monthly)", 0, 1_000_000, 50_000, 1000)
 management_commission_pct = st.sidebar.slider("Management Commission (%)", 0, 50, 5, 1)
 management_commission = management_commission_pct / 100
-supervisor_salary = st.sidebar.number_input("Supervisor Salary", 0, 500000, 25000)
-worker_salary = st.sidebar.number_input("Worker Salary", 0, 100000, 18000)
+supervisor_salary = st.sidebar.slider("Supervisor Salary", 0, 500_000, 25_000, 1000)
+worker_salary = st.sidebar.slider("Worker Salary", 0, 100_000, 18_000, 500)
 n_workers = st.sidebar.slider("Number of Workers", 0, 50, 2, 1)
 
 # Capital Costs
-shed_cost = st.sidebar.number_input("Shed Cost", 500000, 50000000, 1000000, 100000)
-shed_life_years = st.sidebar.number_input("Shed Life (Years)", 1, 30, 10)
-sow_cost = st.sidebar.number_input("Sow Cost (per sow)", 20000, 500000, 35000, 10000)
-sow_life_years = st.sidebar.number_input("Sow Life (Years)", 1, 12, 4)
+shed_cost = st.sidebar.slider("Shed Cost", 500_000, 50_000_000, 1_000_000, 100_000)
+shed_life_years = st.sidebar.slider("Shed Life (Years)", 1, 30, 10, 1)
+sow_cost = st.sidebar.slider("Sow Cost (per sow)", 20_000, 500_000, 35_000, 1000)
+sow_life_years = st.sidebar.slider("Sow Life (Years)", 1, 12, 4, 1)
 
 # Loan
-loan_amount = st.sidebar.number_input("Loan Amount", 0, 100000000, 0, 100000)
-interest_rate_pct = st.sidebar.slider(
-    "Interest Rate (%)",
-    min_value=0.0,
-    max_value=20.0,
-    value=10.0,
-    step=1.0
-)
+loan_amount = st.sidebar.slider("Loan Amount", 0, 100_000_000, 0, 100_000)
+interest_rate_pct = st.sidebar.slider("Interest Rate (%)", 0, 20, 10, 1)
 interest_rate = interest_rate_pct / 100
-loan_tenure_years = st.sidebar.number_input("Loan Tenure (Years)", 1, 20, 5)
-moratorium_months = st.sidebar.number_input("Moratorium Period (Months)", 0, 24, 0)
+loan_tenure_years = st.sidebar.slider("Loan Tenure (Years)", 1, 20, 5, 1)
+moratorium_months = st.sidebar.slider("Moratorium Period (Months)", 0, 24, 0, 1)
 
 # Other Fixed Costs
-medicine_cost = st.sidebar.number_input("Medicine Cost (Monthly)", 0, 500000, 10000, 1000)
-electricity_cost = st.sidebar.number_input("Electricity Cost (Monthly)", 0, 500000, 5000, 1000)
-land_lease = st.sidebar.number_input("Land Lease (Monthly)", 0, 5000000, 10000, 1000)
+medicine_cost = st.sidebar.slider("Medicine Cost (Monthly)", 0, 500_000, 10_000, 1000)
+electricity_cost = st.sidebar.slider("Electricity Cost (Monthly)", 0, 500_000, 5_000, 500)
+land_lease = st.sidebar.slider("Land Lease (Monthly)", 0, 5_000_000, 10_000, 1000)
 
 # Simulation Duration
 months = st.sidebar.slider("Simulation Duration (Months)", 12, 120, 60, 12)
@@ -272,6 +271,8 @@ df_month, df_year, total_sow_cost, shed_cost_val, first_sale_wc, total_pigs_sold
     sow_cost, sow_life_years, loan_amount, interest_rate, loan_tenure_years,
     moratorium_months, medicine_cost, electricity_cost, land_lease, months
 )
+
+# (keep your display/financial summary code unchanged below…)
 
 # Define total capital for financial calculations
 total_capital = total_sow_cost + shed_cost_val
