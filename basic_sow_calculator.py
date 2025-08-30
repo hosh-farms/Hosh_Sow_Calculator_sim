@@ -221,7 +221,7 @@ def sow_rotation_simulator(
 # -------------------------------
 # Streamlit UI
 # -------------------------------
-st.title("🐷 House of Supreme Ham Simulator (Minimal View)")
+st.title("🐷 House of Supreme Ham Farm Simulator")
 st.sidebar.header("Simulation Parameters")
 
 # ✅ Only the parameters you listed
@@ -257,7 +257,7 @@ df_month, df_year, total_sow_cost, shed_cost_val, _, total_pigs_sold, total_pigs
 # -------------------------------
 # Display Monthly & Yearly Summaries (Minimal Columns)
 # -------------------------------
-st.subheader("Monthly Summary (Minimal)")
+st.subheader("Monthly Summary")
 st.dataframe(df_month[[
     'Sows_Crossed',
     'Piglets_Born_Alive',
@@ -270,7 +270,7 @@ st.dataframe(df_month[[
     'Revenue'
 ]])
 
-st.subheader("Yearly Summary (Minimal)")
+st.subheader("Yearly Summary")
 st.dataframe(df_year[[
     'Total_Crossings',
     'Piglets_Born_Alive',
@@ -286,7 +286,7 @@ st.dataframe(df_year[[
 # -------------------------------
 # Financial Summary (Minimal)
 # -------------------------------
-st.subheader("Financial Summary (Minimal)")
+st.subheader("Financial Summary")
 
 total_capital = total_sow_cost + shed_cost_val
 
