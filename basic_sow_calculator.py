@@ -25,7 +25,7 @@ def sow_rotation_simulator(
     sow_feed_price=32,
     sow_feed_intake=2.8,
     grower_feed_price=28,
-    fcr=3.2,
+    fcr=3.1,
     final_weight=105,
     sale_price=180,
     management_fee=50000,
@@ -42,8 +42,8 @@ def sow_rotation_simulator(
     loan_tenure_years=5,
     moratorium_months=0,
     medicine_cost=10000,
-    electricity_cost=5000,
-    land_lease=10000,
+    electricity_cost=0,
+    land_lease=0,
     months=60
 ):
     current_sows = total_sows
@@ -167,7 +167,7 @@ def sow_rotation_simulator(
             'Sow_Feed_Cost': round(sow_feed_cost),
             'Grower_Feed_Cost': round(grower_feed_cost),
             'Staff_Cost': round(staff_cost),
-            'Other_Fixed_Costs': round(other_fixed),
+            'Medicines_Cost': round(other_fixed),
             'Mgmt_Fee': round(mgmt_fixed),
             'Mgmt_Comm': round(mgmt_comm_cost),
             'Total_Operating_Cost': round(total_operating_cost),
@@ -265,9 +265,10 @@ st.dataframe(df_month[[
     'Sow_Feed_Cost',
     'Grower_Feed_Cost',
     'Staff_Cost',
-    'Other_Fixed_Costs',
+    'Medicines_Cost',
     'Total_Operating_Cost',
     'Revenue'
+    'Monthly_Profit'
 ]])
 
 st.subheader("Yearly Summary")
@@ -278,7 +279,7 @@ st.dataframe(df_year[[
     'Sow_Feed_Cost',
     'Grower_Feed_Cost',
     'Staff_Cost',
-    'Other_Fixed_Costs',
+    'Medicines_Cost',
     'Total_Operating_Cost',
     'Revenue'
 ]])
