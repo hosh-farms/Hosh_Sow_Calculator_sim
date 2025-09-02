@@ -283,19 +283,25 @@ monthly_profit_series = df_month['Monthly_Profit']
 cumulative_cash_flow_series = df_month['Cumulative_Cash_Flow']
 
 
-# Break-even month (first month cumulative cash flow turns >= 0)
-break_even_month = next((int(m) for m, c in zip(df_month['Month'], cumulative_cash_flow) if c >= 0), None)
+# --------- FIXED break-even calculation (uses df_month['Cumulative_Cash_Flow']) ----------
+# Use the per-month cumulative series from df_month (this is the correct series)
+cum_series = df_month['Cumulative_Cash_Flow']
 
-if break_even_month is not None:
-    # Filter rows after break-even
-    remaining_profits = df_month.loc[df_month['Month'] >= break_even_month, 'Monthly_Profit']
-
-    # Average profit after break-even
-    avg_profit_after_breakeven = round(remaining_profits.mean(), 2)
-
-    # Total profit earned after break-even
-    profit_after_break_even = remaining_profits.sum()
+# Find first row where cumulative cash flow >= 0
+breakeven_rows = df_month.loc[cum_series >= 0]
+if not breakeven_rows.empty:
+    first_idx = breakeven_rows.index[0]
+    break_even_month = int(df_month.at[first_idx, 'Month'])
+    # Monthly profits after break-even (use the actual Monthly_Profit column)
+    if 'Monthly_Profit' in df_month.columns:
+        remaining_profits = df_month.loc[df_month['Month'] >= break_even_month, 'Monthly_Profit']
+        avg_profit_after_breakeven = round(remaining_profits.mean(), 2) if not remaining_profits.empty else 0
+        profit_after_break_even = remaining_profits.sum() if not remaining_profits.empty else 0
+    else:
+        avg_profit_after_breakeven = 0
+        profit_after_break_even = 0
 else:
+    break_even_month = None
     avg_profit_after_breakeven = 0
     profit_after_break_even = 0
 
