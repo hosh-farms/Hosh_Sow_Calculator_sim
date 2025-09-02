@@ -283,15 +283,21 @@ monthly_profit_series = df_month['Monthly_Profit']
 cumulative_cash_flow_series = df_month['Cumulative_Cash_Flow']
 
 
-# Break-even month
-breakeven_month = next((m for m, c in zip(df_month['Month'], cumulative_cash_flow_series) if c >= 0), None)
+# Break-even month (first month cumulative cash flow turns >= 0)
+break_even_month = next((int(m) for m, c in zip(df_month['Month'], cumulative_cash_flow) if c >= 0), None)
 
-# Average monthly profit after break-even
-if breakeven_month:
-    remaining_monthly_profit = monthly_profit_series[df_month['Month'] >= breakeven_month]
-    avg_profit_after_breakeven = round(remaining_monthly_profit.mean(), 2)
+if break_even_month is not None:
+    # Filter rows after break-even
+    remaining_profits = df_month.loc[df_month['Month'] >= break_even_month, 'Monthly_Profit']
+
+    # Average profit after break-even
+    avg_profit_after_breakeven = round(remaining_profits.mean(), 2)
+
+    # Total profit earned after break-even
+    profit_after_break_even = remaining_profits.sum()
 else:
     avg_profit_after_breakeven = 0
+    profit_after_break_even = 0
 
 # ROI per year
 roi_per_year = []
