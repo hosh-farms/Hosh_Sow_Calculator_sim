@@ -346,70 +346,34 @@ st.write(f"Total ROI: {total_roi_pct:.2f}%")
 # -------------------------------
 # Generate and Display Plots in Streamlit
 # -------------------------------
+# -------------------------------
+# Generate and Display Plots in Streamlit (no matplotlib)
+# -------------------------------
 st.subheader("Simulation Plots")
 
-# ---- Plot 1: Revenue vs Total Costs (Stacked) ----
+# ---- Plot 1: Revenue vs Total Costs (Stacked Breakdown) ----
 st.write("Revenue vs Total Costs (Stacked Breakdown)")
 cost_components = ["Sow_Feed_Cost", "Grower_Feed_Cost", "Staff_Cost", "Other_Fixed_Costs", "Mgmt_Fee", "Mgmt_Comm", "Loan_EMI"]
-fig1, ax1 = plt.subplots(figsize=(10,6))
-ax1.stackplot(
-    df_month["Month"],
-    [df_month[c] for c in cost_components],
-    labels=cost_components,
-    alpha=0.7
-)
-ax1.plot(df_month["Month"], df_month["Revenue"], label="Revenue", color="black", linewidth=2)
-ax1.set_xlabel("Month")
-ax1.set_ylabel("Amount (₹)")
-ax1.set_title("Revenue vs Total Costs (Stacked Breakdown)")
-ax1.legend(loc="upper left")
-st.pyplot(fig1)
-
+df_costs = df_month[['Month'] + cost_components].set_index("Month")
+st.area_chart(df_costs)
+st.line_chart(df_month.set_index("Month")["Revenue"])
 
 # ---- Plot 2: Cumulative Cash Flow ----
 st.write("Cumulative Cash Flow Over Time")
-fig2, ax2 = plt.subplots(figsize=(12, 6))
-ax2.plot(df_month['Month'], df_month['Cumulative_Cash_Flow'])
-ax2.set_xlabel('Month')
-ax2.set_ylabel('Cumulative Cash Flow')
-ax2.set_title('Cumulative Cash Flow Over Time')
-ax2.grid(True)
-st.pyplot(fig2)
+st.line_chart(df_month.set_index("Month")[["Cumulative_Cash_Flow"]])
 
 # ---- Plot 3: Monthly Profit ----
 st.write("Monthly Profit Over Time")
-fig3, ax3 = plt.subplots(figsize=(12, 6))
-ax3.plot(df_month['Month'], df_month['Monthly_Profit'])
-ax3.set_xlabel('Month')
-ax3.set_ylabel('Monthly Profit')
-ax3.set_title('Monthly Profit Over Time')
-ax3.grid(True)
-st.pyplot(fig3)
+st.line_chart(df_month.set_index("Month")[["Monthly_Profit"]])
 
 # ---- Plot 4: Monthly Profit and Loan EMI ----
 st.write("Monthly Profit and Loan EMI Over Time")
-fig4, ax4 = plt.subplots(figsize=(12, 6))
-ax4.plot(df_month['Month'], df_month['Monthly_Profit'], label='Monthly Profit')
-ax4.plot(df_month['Month'], df_month['Loan_EMI'], label='Monthly Loan EMI')
-ax4.set_xlabel('Month')
-ax4.set_ylabel('Amount (₹)')
-ax4.set_title('Monthly Profit and Loan EMI Over Time')
-ax4.grid(True)
-ax4.legend()
-st.pyplot(fig4)
+st.line_chart(df_month.set_index("Month")[["Monthly_Profit", "Loan_EMI"]])
 
 # ---- Plot 5: Total Costs by Component (Bar Graph) ----
 st.write("Total Costs by Component Over Simulation Period")
-cost_components = ["Sow_Feed_Cost", "Grower_Feed_Cost", "Staff_Cost", "Other_Fixed_Costs", "Mgmt_Fee", "Mgmt_Comm", "Loan_EMI"]
 total_costs = df_month[cost_components].sum()
-fig5, ax5 = plt.subplots(figsize=(10, 6))
-ax5.bar(total_costs.index, total_costs.values)
-ax5.set_xlabel("Cost Component")
-ax5.set_ylabel("Total Amount (₹)")
-ax5.set_title("Total Costs by Component Over Simulation Period")
-ax5.tick_params(axis='x', rotation=45)
-plt.tight_layout()
-st.pyplot(fig5)
+st.bar_chart(total_costs)
 
 """**To run this Streamlit application:**
 
