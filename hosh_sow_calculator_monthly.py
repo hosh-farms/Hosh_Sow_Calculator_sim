@@ -232,17 +232,17 @@ final_weight = st.sidebar.slider("Final Weight (kg)", 80, 250, 105, 5)
 sale_price = st.sidebar.slider("Sale Price (₹/kg)", 100, 600, 180, 10)
 
 # Management
-management_fee = st.sidebar.slider("Management Fee (Monthly)", 0, 1_000_000, 0, 5000)
+management_fee = st.sidebar.slider("Management Fee (Monthly)", 0, 500_000, 0, 5000)
 management_commission_pct = st.sidebar.slider("Management Commission (%)", 0, 50, 0, 1)
 management_commission = management_commission_pct / 100
-supervisor_salary = st.sidebar.slider("Supervisor Salary", 0, 500_000, 25_000, 5000)
-worker_salary = st.sidebar.slider("Worker Salary", 0, 100_000, 18_000, 1000)
+supervisor_salary = st.sidebar.slider("Supervisor Salary", 0, 200_000, 25_000, 5000)
+worker_salary = st.sidebar.slider("Worker Salary", 0, 35_000, 18_000, 1000)
 n_workers = st.sidebar.slider("Number of Workers", 0, 50, 2, 1)
 
 # Capital Costs
-shed_cost = st.sidebar.slider("Shed Cost", 500_000, 10_000_000, 1_500_000, 100_000)
+shed_cost = st.sidebar.slider("Shed Cost", 500_000, 20_000_000, 1_500_000, 100_000)
 shed_life_years = st.sidebar.slider("Shed Life (Years)", 1, 30, 10, 1)
-sow_cost = st.sidebar.slider("Sow Cost (per sow)", 20_000, 500_000, 35_000, 1000)
+sow_cost = st.sidebar.slider("Sow Cost (per sow)", 20_000, 200_000, 35_000, 1000)
 sow_life_years = st.sidebar.slider("Sow Life (Years)", 1, 12, 4, 1)
 
 # Loan
@@ -253,9 +253,9 @@ loan_tenure_years = st.sidebar.slider("Loan Tenure (Years)", 1, 20, 5, 1)
 moratorium_months = st.sidebar.slider("Moratorium Period (Months)", 0, 24, 0, 1)
 
 # Other Fixed Costs
-medicine_cost = st.sidebar.slider("Medicine Cost (Monthly)", 0, 200_000, 10_000, 1000)
-electricity_cost = st.sidebar.slider("Electricity Cost (Monthly)", 0, 200_000, 5_000, 1000)
-land_lease = st.sidebar.slider("Land Lease (Monthly)", 0, 200_000, 10_000, 1000)
+medicine_cost = st.sidebar.slider("Medicine Cost (Monthly)", 0, 100_000, 10_000, 1000)
+electricity_cost = st.sidebar.slider("Electricity Cost (Monthly)", 0, 100_000, 5_000, 1000)
+land_lease = st.sidebar.slider("Land Lease (Monthly)", 0, 100_000, 10_000, 1000)
 
 # Simulation Duration
 months = st.sidebar.slider("Simulation Duration (Months)", 12, 120, 60, 12)
