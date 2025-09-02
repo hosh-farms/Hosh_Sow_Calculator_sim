@@ -333,22 +333,21 @@ total_roi_pct = (cumulative_cash_flow / total_capital) * 100 if total_capital > 
 # Average monthly profit
 average_monthly_profit = df_month['Monthly_Profit'].mean()
 
-# Break-even month (first month cumulative cash flow turns >= 0)
-break_even_month = next((int(m) for m, c in zip(df_month['Month'], cum_cash_flow) if c >= 0), None)
+# Ensure cumulative_cash_flow is iterable with same length as df_month
+cumulative_cash_flow_series = pd.Series(cumulative_cash_flow, index=df_month['Month'])
+
+# Find break-even month
+break_even_month = next((int(m) for m, c in cumulative_cash_flow_series.items() if c >= 0), None)
 
 if break_even_month is not None:
-    # Filter rows after break-even
+    # Filter profits after break-even
     remaining_profits = df_month.loc[df_month['Month'] >= break_even_month, 'Monthly_Profit']
 
-    # Average profit after break-even
     avg_profit_after_breakeven = round(remaining_profits.mean(), 2)
-
-    # Total profit earned after break-even
     profit_after_break_even = remaining_profits.sum()
 else:
     avg_profit_after_breakeven = 0
     profit_after_break_even = 0
-
 
 
 # Display summary
