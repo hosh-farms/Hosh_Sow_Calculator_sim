@@ -327,27 +327,39 @@ total_roi_pct = (cumulative_cash_flow / total_capital) * 100 if total_capital > 
 # Average monthly profit
 average_monthly_profit = df_month['Monthly_Profit'].mean()
 
-# Break-even month
-cum_profit = df_month['Cumulative_Cash_Flow']
-break_even_month = cum_profit[cum_profit >= 0].index[0] + 1 if any(cum_profit >= 0) else None
-profit_after_break_even = cum_profit.iloc[break_even_month-1:] - cum_profit.iloc[break_even_month-1]
+# Break-even month (first month cumulative cash flow turns >= 0)
+break_even_month = next((int(m) for m, c in zip(df_month['Month'], cum_cash_flow) if c >= 0), None)
+
+if break_even_month is not None:
+    # Filter rows after break-even
+    remaining_profits = df_month.loc[df_month['Month'] >= break_even_month, 'Monthly_Profit']
+
+    # Average profit after break-even
+    avg_profit_after_breakeven = round(remaining_profits.mean(), 2)
+
+    # Total profit earned after break-even
+    profit_after_break_even = remaining_profits.sum()
+else:
+    avg_profit_after_breakeven = 0
+    profit_after_break_even = 0
+
+
 
 # Display summary
+
+st.subheader("📊 Final Financial Summary")
 st.write(f"Total Crossings Done: {df_month['Sows_Crossed'].sum():,.0f}")
 st.write(f"Total Pigs Born: {total_pigs_born:.0f}")
 st.write(f"Total Pigs Sold: {total_pigs_sold:.0f}")
 st.write(f"Animals Remaining in Shed: {animals_left:.0f}")
 st.write(f"Total Capital Invested: ₹{total_capital:,.2f}")
 st.write(f"Working Capital till First Sale: ₹{first_sale_wc:,.2f}")
-st.write(f"Break-even Month: {break_even_month}")
-st.write(f"Profit After Break-even Month (cumulative): ₹{profit_after_break_even.sum():,.0f}")
-# st.write(f"ROI on Total Capital: {roi_total:.2f}%")
+st.write(f"Break-even Month: {break_even_month if break_even_month else 'Not achieved'}")
+st.write(f"Profit After Break-even (cumulative): ₹{profit_after_break_even:,.0f}")
 st.write(f"Average Monthly Profit: ₹{average_monthly_profit:,.0f}")
 st.write(f"Average Monthly Profit after Break-even: ₹{avg_profit_after_breakeven:,.2f}")
-# st.write(f"Cumulative Cash Flow: ₹{cumulative_cash_flow:,.2f}")
 st.write(f"Total Interest Paid Over Loan Tenure: ₹{total_interest_paid:,.0f}")
 st.write(f"Total ROI: {total_roi_pct:.2f}%")
-
 # st.write("ROI per Year:")
 # for year_label, roi_val in zip(df_year.index, roi_per_year):
 #     st.write(f"{year_label}: {roi_val}%")
