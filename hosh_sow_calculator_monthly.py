@@ -336,35 +336,58 @@ average_monthly_profit = df_month['Monthly_Profit'].mean()
 # Ensure cumulative_cash_flow is iterable with same length as df_month
 cumulative_cash_flow_series = pd.Series(cumulative_cash_flow, index=df_month['Month'])
 
-# Find break-even month
-break_even_month = next((int(m) for m, c in cumulative_cash_flow_series.items() if c >= 0), None)
+# ---------- Replace your old break-even & summary block with this ----------
 
-if break_even_month is not None:
-    # Filter profits after break-even
+# Ensure total capital is defined
+total_capital = total_sow_cost + shed_cost_val
+
+# Use the per-month cumulative series from df_month (not the scalar)
+cum_series = df_month['Cumulative_Cash_Flow']
+
+# Find first month where cumulative cash flow >= 0
+breakeven_indices = cum_series[cum_series >= 0].index
+if len(breakeven_indices) > 0:
+    first_idx = breakeven_indices[0]
+    break_even_month = int(df_month.at[first_idx, 'Month'])
+    # profits after break-even (monthly profit values)
     remaining_profits = df_month.loc[df_month['Month'] >= break_even_month, 'Monthly_Profit']
-
-    avg_profit_after_breakeven = round(remaining_profits.mean(), 2)
-    profit_after_break_even = remaining_profits.sum()
+    avg_profit_after_breakeven = round(remaining_profits.mean(), 2) if not remaining_profits.empty else 0
+    profit_after_break_even = remaining_profits.sum() if not remaining_profits.empty else 0
 else:
+    break_even_month = None
     avg_profit_after_breakeven = 0
     profit_after_break_even = 0
 
+# Totals
+total_crossings = int(df_month['Sows_Crossed'].sum()) if 'Sows_Crossed' in df_month.columns else 0
+total_pigs_born = int(total_pigs_born)
+total_pigs_sold = int(total_pigs_sold)
+animals_left = int(animals_left)
+total_interest_paid = float(total_interest_paid) if 'total_interest_paid' in locals() or 'total_interest_paid' in globals() else 0.0
 
-# Display summary
+# Total ROI (over simulation)
+total_roi_pct = (cumulative_cash_flow / total_capital) * 100 if total_capital > 0 else 0
 
-st.subheader("📊 Final Financial Summary")
-st.write(f"Total Crossings Done: {df_month['Sows_Crossed'].sum():,.0f}")
-st.write(f"Total Pigs Born: {total_pigs_born:.0f}")
-st.write(f"Total Pigs Sold: {total_pigs_sold:.0f}")
-st.write(f"Animals Remaining in Shed: {animals_left:.0f}")
-st.write(f"Total Capital Invested: ₹{total_capital:,.2f}")
+# Average monthly profit (overall)
+average_monthly_profit = df_month['Monthly_Profit'].mean()
+
+# ---------- Display final summary (at the end of the app) ----------
+st.subheader("Financial Summary")
+
+st.write(f"Total Crossings Done: {total_crossings:,}")
+st.write(f"Total Pigs Born: {total_pigs_born:,}")
+st.write(f"Total Pigs Sold: {total_pigs_sold:,}")
+st.write(f"Animals Remaining in Shed: {animals_left:,}")
+st.write(f"Total Capital Invested (Shed + Sows): ₹{total_capital:,.2f}")
 st.write(f"Working Capital till First Sale: ₹{first_sale_wc:,.2f}")
-st.write(f"Break-even Month: {break_even_month if break_even_month else 'Not achieved'}")
+
+if break_even_month:
+    st.write(f"Break-even Month: {break_even_month}")
+else:
+    st.write("Break-even: Not achieved within simulation period")
+
 st.write(f"Profit After Break-even (cumulative): ₹{profit_after_break_even:,.0f}")
 st.write(f"Average Monthly Profit: ₹{average_monthly_profit:,.0f}")
 st.write(f"Average Monthly Profit after Break-even: ₹{avg_profit_after_breakeven:,.2f}")
 st.write(f"Total Interest Paid Over Loan Tenure: ₹{total_interest_paid:,.0f}")
 st.write(f"Total ROI: {total_roi_pct:.2f}%")
-# st.write("ROI per Year:")
-# for year_label, roi_val in zip(df_year.index, roi_per_year):
-#     st.write(f"{year_label}: {roi_val}%")
