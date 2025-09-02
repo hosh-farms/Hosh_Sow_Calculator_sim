@@ -398,18 +398,3 @@ st.write(f"Average Monthly Profit after Break-even: ₹{avg_profit_after_breakev
 st.write(f"Total Interest Paid Over Loan Tenure: ₹{total_interest_paid:,.0f}")
 st.write(f"Total ROI: {total_roi_pct:.2f}%")
 
-
-import matplotlib.pyplot as plt
-
-st.subheader("Cumulative Cash Flow Over Time")
-fig, ax = plt.subplots()
-ax.plot(df_month['Month'], df_month['Cumulative Cash Flow'], label="Cumulative Cash Flow")
-ax.axhline(0, color='red', linestyle='--', label="Break Even Line")
-
-if break_even_month:
-    ax.axvline(break_even_month, color='green', linestyle='--', label=f"Break Even (Month {break_even_month})")
-
-ax.set_xlabel("Month")
-ax.set_ylabel("₹ Cash Flow")
-ax.legend()
-st.pyplot(fig)
