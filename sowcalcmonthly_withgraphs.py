@@ -374,7 +374,7 @@ area_chart = alt.Chart(df_costs_melt).mark_area(opacity=0.7).encode(
 )
 
 # Revenue line
-revenue_line = alt.Chart(df_month).mark_line(color="black", strokeWidth=2).encode(
+revenue_line = alt.Chart(df_month).mark_line(color="green", strokeWidth=2).encode(
     x="Month:O",
     y="Revenue:Q",
     tooltip=["Month", "Revenue"]
