@@ -347,38 +347,125 @@ st.write(f"Total ROI: {total_roi_pct:.2f}%")
 # -------------------------------
 # -------------------------------
 # Generate and Display Plots in Streamlit (no matplotlib)
+
 # -------------------------------
+# Generate and Display Plots in Streamlit (Altair only)
+# -------------------------------
+import altair as alt
+
 st.subheader("Simulation Plots")
 
 # ---- Plot 1: Revenue vs Total Costs (Stacked Breakdown) ----
 st.write("Revenue vs Total Costs (Stacked Breakdown)")
-cost_components = ["Sow_Feed_Cost", "Grower_Feed_Cost", "Staff_Cost", "Other_Fixed_Costs", "Mgmt_Fee", "Mgmt_Comm", "Loan_EMI"]
-df_costs = df_month[['Month'] + cost_components].set_index("Month")
-st.area_chart(df_costs)
-st.line_chart(df_month.set_index("Month")["Revenue"])
+cost_components = ["Sow_Feed_Cost", "Grower_Feed_Cost", "Staff_Cost", 
+                   "Other_Fixed_Costs", "Mgmt_Fee", "Mgmt_Comm", "Loan_EMI"]
 
-# ---- Plot 2: Cumulative Cash Flow ----
-st.write("Cumulative Cash Flow Over Time")
-st.line_chart(df_month.set_index("Month")[["Cumulative_Cash_Flow"]])
+# Melt cost data
+df_costs_melt = df_month[["Month"] + cost_components].melt(
+    id_vars="Month", var_name="Cost Component", value_name="Value"
+)
 
-# ---- Plot 3: Monthly Profit ----
+# Stacked area chart for costs
+area_chart = alt.Chart(df_costs_melt).mark_area(opacity=0.7).encode(
+    x="Month:O",
+    y="Value:Q",
+    color=alt.Color("Cost Component", scale=alt.Scale(scheme="category20b")),
+    tooltip=["Month", "Cost Component", "Value"]
+)
+
+# Revenue line
+revenue_line = alt.Chart(df_month).mark_line(color="black", strokeWidth=2).encode(
+    x="Month:O",
+    y="Revenue:Q",
+    tooltip=["Month", "Revenue"]
+)
+
+st.altair_chart(area_chart + revenue_line, use_container_width=True)
+
+
+# ---- Plot 2: Monthly Profit ----
 st.write("Monthly Profit Over Time")
-st.line_chart(df_month.set_index("Month")[["Monthly_Profit"]])
+profit_chart = alt.Chart(df_month).mark_line(color="blue").encode(
+    x="Month:O",
+    y="Monthly_Profit:Q",
+    tooltip=["Month", "Monthly_Profit"]
+).properties(height=400)
 
-# ---- Plot 4: Monthly Profit and Loan EMI ----
-st.write("Monthly Profit and Loan EMI Over Time")
-st.line_chart(df_month.set_index("Month")[["Monthly_Profit", "Loan_EMI"]])
+st.altair_chart(profit_chart, use_container_width=True)
 
-# ---- Plot 5: Total Costs by Component (Bar Graph) ----
+
+# ---- Plot 3: Cumulative Cash Flow + Profit with Milestones ----
+st.write("Cumulative Cash Flow & Profit Over Time (Milestones)")
+
+df_cumulative = pd.DataFrame({
+    "Month": df_month["Month"],
+    "Month_Label": df_month["Month"],  # replace with Year-Month if available
+    "Cumulative Cash Flow": df_month["Cumulative_Cash_Flow"]/1e5,
+    "Cumulative Profit": (df_month["Monthly_Profit"].cumsum())/1e5,
+})
+
+df_cum_melt = df_cumulative.melt(id_vars=["Month", "Month_Label"], 
+                                 var_name="Metric", value_name="Value")
+
+# Base line chart
+line_chart = alt.Chart(df_cum_melt).mark_line().encode(
+    x=alt.X("Month_Label:O", title="Time (Months)"),
+    y=alt.Y("Value:Q", title="Amount (₹ Lakhs)"),
+    color="Metric",
+    tooltip=["Month_Label", "Metric", "Value"]
+)
+
+# Break-even markers
+rules = []
+if break_even_month:
+    rules.append(
+        alt.Chart(pd.DataFrame({"Month_Label": [break_even_month]})).mark_rule(
+            color="red", strokeDash=[6,2]
+        ).encode(x="Month_Label:O")
+    )
+
+profit_break_even = next((i for i, val in enumerate(df_cumulative["Cumulative Profit"]) if val >= 0), None)
+if profit_break_even is not None:
+    rules.append(
+        alt.Chart(pd.DataFrame({"Month_Label": [df_cumulative["Month"].iloc[profit_break_even]]})).mark_rule(
+            color="orange", strokeDash=[6,2]
+        ).encode(x="Month_Label:O")
+    )
+
+# Highlight max points
+max_cf_idx = df_cumulative["Cumulative Cash Flow"].idxmax()
+max_profit_idx = df_cumulative["Cumulative Profit"].idxmax()
+
+points = alt.Chart(pd.DataFrame({
+    "Month_Label": [
+        df_cumulative["Month"].iloc[max_cf_idx],
+        df_cumulative["Month"].iloc[max_profit_idx]
+    ],
+    "Value": [
+        df_cumulative["Cumulative Cash Flow"].iloc[max_cf_idx],
+        df_cumulative["Cumulative Profit"].iloc[max_profit_idx]
+    ],
+    "Metric": ["Max Cash Flow", "Max Profit"]
+})).mark_point(size=100).encode(
+    x="Month_Label:O",
+    y="Value:Q",
+    color="Metric",
+    shape="Metric"
+)
+
+st.altair_chart(line_chart + sum(rules, alt.LayerChart()) + points, use_container_width=True)
+
+
+# ---- Plot 4: Total Costs by Component ----
 st.write("Total Costs by Component Over Simulation Period")
-total_costs = df_month[cost_components].sum()
-st.bar_chart(total_costs)
+total_costs = df_month[cost_components].sum().reset_index()
+total_costs.columns = ["Cost Component", "Total"]
 
-"""**To run this Streamlit application:**
+bar_chart = alt.Chart(total_costs).mark_bar().encode(
+    x=alt.X("Cost Component", sort="-y"),
+    y="Total:Q",
+    color=alt.Color("Cost Component", scale=alt.Scale(scheme="category20b")),
+    tooltip=["Cost Component", "Total"]
+).properties(height=500)
 
-1.  Save the code above as a Python file with a `.py` extension (e.g., `pig_simulator_app.py`).
-2.  Open your terminal or command prompt.
-3.  Navigate to the directory where you saved the file.
-4.  Run the command: `streamlit run pig_simulator_app.py`
-5.  Your web browser will open with the Streamlit application.
-"""
+st.altair_chart(bar_chart, use_container_width=True)
