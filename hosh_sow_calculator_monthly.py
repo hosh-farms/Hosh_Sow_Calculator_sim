@@ -216,7 +216,7 @@ st.title("🐷 House of Supreme Ham Simulator")
 st.sidebar.header("Simulation Parameters")
 
 # Sow & Piglet
-total_sows = st.sidebar.slider("Total Sows", 10, 300, 30, 1)
+total_sows = st.sidebar.slider("Total Sows", 10, 200, 30, 1)
 piglets_per_cycle = st.sidebar.slider("Piglets per Cycle", 5, 30, 10, 1)
 piglet_mortality_pct = st.sidebar.slider("Piglet Mortality (%)", 0, 50, 7, 1)
 piglet_mortality = piglet_mortality_pct / 100
