@@ -146,7 +146,6 @@ def sow_rotation_simulator(
         monthly_profit = revenue - total_operating_cost
         monthly_cash_flow = revenue - total_operating_cost - loan_payment
         cumulative_cash_flow = cumulative_cash_flow + monthly_cash_flow
-        cumulative_profit+ = monthly_profit
 
         monthly_data.append({
             'Month': month,
@@ -165,7 +164,6 @@ def sow_rotation_simulator(
             'Monthly_Profit': round(monthly_profit),
             'Loan_EMI': round(loan_payment),
             'Monthly_Cash_Flow': round(monthly_cash_flow),
-            'cumulative_profit': round(cumulative_profit),
             'Cumulative_Cash_Flow': round(cumulative_cash_flow),
             'Depreciation': round(dep)
         })
