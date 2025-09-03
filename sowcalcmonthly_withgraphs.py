@@ -174,8 +174,8 @@ def sow_rotation_simulator(
     df_year = df_month.groupby(((df_month['Month']-1)//12)*12).sum()
     df_year.index = [f"Year {i+1}" for i in range(len(df_year))]
 
-    df_year['Cash_Yearly_Profit'] = df_year['Revenue'] - df_year['Total_Operating_Cost']
-    df_year['Profit_After_Loan'] = df_year['Cash_Yearly_Profit'] - df_year['Loan_EMI']
+    # df_year['Cash_Yearly_Profit'] = df_year['Revenue'] - df_year['Total_Operating_Cost']
+    # df_year['Profit_After_Loan'] = df_year['Cash_Yearly_Profit'] - df_year['Loan_EMI']
 
     df_year['Total_Crossings'] = df_month.groupby(((df_month['Month']-1)//12)*12)['Sows_Crossed'].sum().values
 
