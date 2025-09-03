@@ -237,9 +237,9 @@ def sow_rotation_simulator(
 
     # Average monthly profit (overall)
     average_monthly_profit_after_dep  = df_month['Monthly_Profit'].mean()
-
+    average_monthly_profit  = df_month['Monthly_Cash_Flow'].mean()
     # Return all relevant data for plotting and summary
-    return df_month, df_year, total_sow_cost, shed_cost, first_sale_cash_needed, total_pigs_sold, total_pigs_born, animals_left, cumulative_cash_flow, total_interest_paid, break_even_month, profit_after_break_even, average_monthly_profit_after_dep, avg_profit_after_breakeven, total_crossings, total_roi_pct
+    return df_month, df_year, total_sow_cost, shed_cost, first_sale_cash_needed, total_pigs_sold, total_pigs_born, animals_left, cumulative_cash_flow, total_interest_paid, break_even_month, profit_after_break_even, average_monthly_profit_after_dep,average_monthly_profit, avg_profit_after_breakeven, total_crossings, total_roi_pct
 
 # -------------------------------
 # Streamlit UI
@@ -301,7 +301,7 @@ months = st.sidebar.slider("Simulation Duration (Months)", 12, 120, 60, 12)
 # -------------------------------
 # Run Simulation and get results
 # -------------------------------
-df_month, df_year, total_sow_cost, shed_cost_val, first_sale_wc, total_pigs_sold, total_pigs_born, animals_left, cumulative_cash_flow, total_interest_paid, break_even_month, profit_after_break_even, average_monthly_profit_after_dep, avg_profit_after_breakeven, total_crossings, total_roi_pct = sow_rotation_simulator(
+df_month, df_year, total_sow_cost, shed_cost_val, first_sale_wc, total_pigs_sold, total_pigs_born, animals_left, cumulative_cash_flow, total_interest_paid, break_even_month, profit_after_break_even, average_monthly_profit_after_dep, average_monthly_profit, avg_profit_after_breakeven, total_crossings, total_roi_pct = sow_rotation_simulator(
     total_sows, piglets_per_cycle, piglet_mortality_pct / 100, abortion_rate_pct / 100,
     sow_feed_price, sow_feed_intake, grower_feed_price, fcr,
     final_weight, sale_price, management_fee, management_commission_pct / 100,
@@ -336,7 +336,8 @@ else:
     st.write("Break-even: Not achieved within simulation period")
 
 st.write(f"Profit After Break-even (cumulative): ₹{profit_after_break_even:,.0f}")
-st.write(f"Average Monthly Profit_after_dep: ₹{average_monthly_profit_after_dep:,.0f}")
+# st.write(f"Average Monthly Profit_after_dep: ₹{average_monthly_profit_after_dep:,.0f}")
+st.write(f"average_monthly_profit: ₹{average_monthly_profit:,.0f}")
 st.write(f"Average Monthly Profit after Break-even: ₹{avg_profit_after_breakeven:,.2f}")
 st.write(f"Total Interest Paid Over Loan Tenure: ₹{total_interest_paid:,.0f}")
 st.write(f"Total ROI: {total_roi_pct:.2f}%")
