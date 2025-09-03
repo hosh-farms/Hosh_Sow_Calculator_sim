@@ -402,7 +402,7 @@ df_cumulative = pd.DataFrame({
     "Month": df_month["Month"],
     "Month_Label": df_month["Month"],  # replace with Year-Month if available
     "Cumulative Cash Flow": df_month["Cumulative_Cash_Flow"]/1e5,
-    "Cumulative Profit": (df_month["Monthly_Cash_Flow"].cumsum())/1e5,
+    "Cumulative Profit": (df_month["Monthly_Profit"].cumsum())/1e5,
 })
 
 df_cum_melt = df_cumulative.melt(id_vars=["Month", "Month_Label"], 
