@@ -239,7 +239,7 @@ def sow_rotation_simulator(
     average_monthly_profit  = df_month['Monthly_Profit'].mean()
     average_monthly_profit_after_loan  = df_month['Monthly_Cash_Flow'].mean()
     # Return all relevant data for plotting and summary
-    return df_month, df_year, total_sow_cost, shed_cost, first_sale_cash_needed, total_pigs_sold, total_pigs_born, animals_left, cumulative_cash_flow, total_interest_paid, break_even_month, profit_after_break_even, average_monthly_profit_after_dep,average_monthly_profit, avg_profit_after_breakeven, total_crossings, total_roi_pct
+    return df_month, df_year, total_sow_cost, shed_cost, first_sale_cash_needed, total_pigs_sold, total_pigs_born, animals_left, cumulative_cash_flow, total_interest_paid, break_even_month, profit_after_break_even, average_monthly_profit, avg_profit_after_breakeven, total_crossings, total_roi_pct
 
 # -------------------------------
 # Streamlit UI
@@ -301,7 +301,7 @@ months = st.sidebar.slider("Simulation Duration (Months)", 12, 120, 60, 12)
 # -------------------------------
 # Run Simulation and get results
 # -------------------------------
-df_month, df_year, total_sow_cost, shed_cost_val, first_sale_wc, total_pigs_sold, total_pigs_born, animals_left, cumulative_cash_flow, total_interest_paid, break_even_month, profit_after_break_even, average_monthly_profit_after_dep, average_monthly_profit, avg_profit_after_breakeven, total_crossings, total_roi_pct = sow_rotation_simulator(
+df_month, df_year, total_sow_cost, shed_cost_val, first_sale_wc, total_pigs_sold, total_pigs_born, animals_left, cumulative_cash_flow, total_interest_paid, break_even_month, profit_after_break_even, average_monthly_profit, avg_profit_after_breakeven, total_crossings, total_roi_pct = sow_rotation_simulator(
     total_sows, piglets_per_cycle, piglet_mortality_pct / 100, abortion_rate_pct / 100,
     sow_feed_price, sow_feed_intake, grower_feed_price, fcr,
     final_weight, sale_price, management_fee, management_commission_pct / 100,
