@@ -145,7 +145,7 @@ def sow_rotation_simulator(
 
         monthly_profit = revenue - total_operating_cost
         monthly_cash_flow = revenue - total_operating_cost - loan_payment
-        cumulative_cash_flow = cumulative_cash_flow + monthly_cash_flow - dep
+        cumulative_cash_flow = cumulative_cash_flow + monthly_cash_flow
 
         monthly_data.append({
             'Month': month,
@@ -161,11 +161,11 @@ def sow_rotation_simulator(
             'Mgmt_Comm': round(mgmt_comm_cost),
             'Total_Operating_Cost': round(total_operating_cost),
             'Revenue': round(revenue),
-            'Loan_EMI': round(loan_payment),
-            'Depreciation': round(dep),
-            'Monthly_Cash_Flow': round(monthly_cash_flow),
             'Monthly_Profit': round(monthly_profit),
-            'Cumulative_Cash_Flow': round(cumulative_cash_flow)
+            'Loan_EMI': round(loan_payment),
+            'Monthly_Cash_Flow': round(monthly_cash_flow),
+            'Cumulative_Cash_Flow': round(cumulative_cash_flow),
+            'Depreciation': round(dep)
         })
 
     df_month = pd.DataFrame(monthly_data)
@@ -239,7 +239,7 @@ def sow_rotation_simulator(
     average_monthly_profit  = df_month['Monthly_Profit'].mean()
     average_monthly_profit_after_loan  = df_month['Monthly_Cash_Flow'].mean()
     # Return all relevant data for plotting and summary
-    return df_month, df_year, total_sow_cost, shed_cost, first_sale_cash_needed, total_pigs_sold, total_pigs_born, animals_left, cumulative_cash_flow, total_interest_paid, break_even_month, profit_after_break_even, average_monthly_profit, avg_profit_after_breakeven, total_crossings, total_roi_pct
+    return df_month, df_year, total_sow_cost, shed_cost, first_sale_cash_needed, total_pigs_sold, total_pigs_born, animals_left, cumulative_cash_flow, total_interest_paid, break_even_month, profit_after_break_even, average_monthly_profit, average_monthly_profit_after_loan, avg_profit_after_breakeven, total_crossings, total_roi_pct
 
 # -------------------------------
 # Streamlit UI
