@@ -236,8 +236,8 @@ def sow_rotation_simulator(
     total_roi_pct = (cumulative_cash_flow / total_capital) * 100 if total_capital > 0 else 0
 
     # Average monthly profit (overall)
-    average_monthly_profit_after_dep  = df_month['Monthly_Profit'].mean()
-    average_monthly_profit  = df_month['Monthly_Cash_Flow'].mean()
+    average_monthly_profit  = df_month['Monthly_Profit'].mean()
+    average_monthly_profit_after_loan  = df_month['Monthly_Cash_Flow'].mean()
     # Return all relevant data for plotting and summary
     return df_month, df_year, total_sow_cost, shed_cost, first_sale_cash_needed, total_pigs_sold, total_pigs_born, animals_left, cumulative_cash_flow, total_interest_paid, break_even_month, profit_after_break_even, average_monthly_profit_after_dep,average_monthly_profit, avg_profit_after_breakeven, total_crossings, total_roi_pct
 
