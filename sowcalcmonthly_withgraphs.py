@@ -143,7 +143,7 @@ def sow_rotation_simulator(
         else:
             loan_payment = 0
 
-        monthly_profit = revenue - total_operating_cost - dep - loan_payment
+        monthly_profit = revenue - total_operating_cost
         monthly_cash_flow = revenue - total_operating_cost - loan_payment
         cumulative_cash_flow += monthly_cash_flow
 
