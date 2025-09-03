@@ -174,8 +174,8 @@ def sow_rotation_simulator(
     df_year = df_month.groupby(((df_month['Month']-1)//12)*12).sum()
     df_year.index = [f"Year {i+1}" for i in range(len(df_year))]
 
-    df_year['Cash_Profit'] = df_year['Revenue'] - df_year['Total_Operating_Cost']
-    df_year['Profit_After_Dep_Loan'] = df_year['Cash_Profit'] - df_year['Depreciation'] - df_year['Loan_EMI']
+    df_year['Cash_Yearly_Profit'] = df_year['Revenue'] - df_year['Total_Operating_Cost']
+    df_year['Profit_After_Loan'] = df_year['Cash_Yearly_Profit'] - df_year['Loan_EMI']
 
     df_year['Total_Crossings'] = df_month.groupby(((df_month['Month']-1)//12)*12)['Sows_Crossed'].sum().values
 
@@ -239,7 +239,7 @@ def sow_rotation_simulator(
     average_monthly_profit  = df_month['Monthly_Profit'].mean()
     average_monthly_profit_after_loan  = df_month['Monthly_Cash_Flow'].mean()
     # Return all relevant data for plotting and summary
-    return df_month, df_year, total_sow_cost, shed_cost, first_sale_cash_needed, total_pigs_sold, total_pigs_born, animals_left, cumulative_cash_flow, total_interest_paid, break_even_month, profit_after_break_even, average_monthly_profit, average_monthly_profit_after_loan, avg_profit_after_breakeven, total_crossings, total_roi_pct
+    return df_month, df_year, total_sow_cost, shed_cost, first_sale_cash_needed, total_pigs_sold, total_pigs_born, animals_left, cumulative_cash_flow, total_interest_paid, break_even_month, profit_after_break_even, average_monthly_profit, avg_profit_after_breakeven, total_crossings, total_roi_pct
 
 # -------------------------------
 # Streamlit UI
