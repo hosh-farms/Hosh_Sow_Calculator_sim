@@ -1,6 +1,9 @@
-
+import sys
+!{sys.executable} -m pip install numpy-financial
 import streamlit as st
 import pandas as pd
+import numpy_financial as npf
+
 # import matplotlib.pyplot as plt
 
 # -------------------------------
@@ -344,34 +347,37 @@ st.write(f"Total ROI: {total_roi_pct:.2f}%")
 # -------------------------------
 # Additional Financial Metrics
 # -------------------------------
-import numpy as np
 
-total_capital = total_sow_cost + shed_cost_val
-months = len(df_month)
-
-# liquidation value of unsold animals
+# -------------------------------
+# Advanced Financial Metrics
+# -------------------------------
+# Cash flows: initial investment (negative) + monthly cash flows + liquidation value at end
+initial_investment = -(total_sow_cost + shed_cost_val)
 liquidation_value = animals_left * final_weight * sale_price
+cash_flows = [initial_investment] + df_month["Monthly_Cash_Flow"].tolist()
+cash_flows[-1] += liquidation_value  # add liquidation in final month
 
-# ROI with liquidation
-final_value = cumulative_cash_flow + liquidation_value
-roi_with_liquidation = (final_value - total_capital) / total_capital * 100 if total_capital > 0 else 0
+# ROI (with liquidation)
+roi_with_assets = ((sum(cash_flows) / -initial_investment) * 100) if initial_investment < 0 else 0
 
 # CAGR
+final_value = -initial_investment + sum(cash_flows)
 years = months / 12
-cagr = ((final_value / total_capital) ** (1 / years) - 1) * 100 if total_capital > 0 and final_value > 0 else 0
+cagr = ((final_value / -initial_investment) ** (1 / years) - 1) * 100 if initial_investment < 0 else 0
 
 # IRR
-cash_flows = [-total_capital] + df_month["Monthly_Cash_Flow"].tolist()
-cash_flows[-1] += liquidation_value
-irr = np.irr(cash_flows) * 100 if hasattr(np, "irr") else None
+try:
+    irr = npf.irr(cash_flows) * 100
+except Exception:
+    irr = None
 
-# Display in app
-st.write(f"ROI (with liquidation of animals): {roi_with_liquidation:.2f}%")
+st.subheader("📊 Advanced Financial Metrics")
+st.write(f"ROI (with liquidation value): {roi_with_assets:.2f}%")
 st.write(f"CAGR: {cagr:.2f}%")
 if irr is not None:
     st.write(f"IRR: {irr:.2f}%")
 else:
-    st.write("IRR: Could not be calculated (NumPy version issue)")
+    st.write("IRR: Could not be calculated")
 
 # -------------------------------
 # Generate and Display Plots in Streamlit
