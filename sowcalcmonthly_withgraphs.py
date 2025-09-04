@@ -243,7 +243,7 @@ def sow_rotation_simulator(
     # Calculate final asset value
     shed_remaining_value = shed_cost * max(0, (shed_life_years*12 - months)/(shed_life_years*12))
     sows_remaining_value = current_sows * sow_cost * max(0, (sow_life_years*12 - months)/(sow_life_years*12))
-    growers_remaining_value = animals_left * final_weight * sale_price  # market value
+    growers_remaining_value = animals_left * 12000  # market value
     
     final_assets_value = shed_remaining_value + sows_remaining_value + growers_remaining_value
     
