@@ -323,7 +323,7 @@ months = st.sidebar.slider("Simulation Duration (Months)", 12, 120, 60, 12)
 # -------------------------------
 # Run Simulation and get results
 # -------------------------------
-df_month, df_year, total_sow_cost, shed_cost_val, first_sale_wc, total_pigs_sold, total_pigs_born, animals_left, cumulative_cash_flow, total_interest_paid, break_even_month, profit_after_break_even, average_monthly_profit, avg_profit_after_breakeven, total_crossings, total_roi_pct = sow_rotation_simulator(
+df_month, df_year, total_sow_cost, shed_cost_val, first_sale_wc, total_pigs_sold, total_pigs_born, animals_left, cumulative_cash_flow, total_interest_paid, break_even_month, profit_after_break_even, average_monthly_profit, avg_profit_after_breakeven, total_crossings, roi_with_assets, realized_cagr = sow_rotation_simulator(
     total_sows, piglets_per_cycle, piglet_mortality_pct / 100, abortion_rate_pct / 100,
     sow_feed_price, sow_feed_intake, grower_feed_price, fcr,
     final_weight, sale_price, management_fee, management_commission_pct / 100,
@@ -364,8 +364,9 @@ st.write(f"Average Monthly Profit after Break-even: ₹{avg_profit_after_breakev
 st.write(f"Total Interest Paid Over Loan Tenure: ₹{total_interest_paid:,.0f}")
 st.write(f"Total ROI: {total_roi_pct:.2f}%")
 # ------------------------------
-st.write(f"CAGR (Realized Cash Flows): {realized_cagr*100:.2f}%")
-st.write(f"Total ROI including remaining assets: {adjusted_roi_pct:.2f}%")
+st.write(f"Realized CAGR: {realized_cagr:.2f}%")
+st.write(f"ROI including final assets: {roi_with_assets:.2f}%")
+
 
 
 # -------------------------------
