@@ -344,23 +344,44 @@ st.write(f"Total ROI: {total_roi_pct:.2f}%")
 # Additional Financial Metrics
 # -------------------------------
 
-# --- ROI, CAGR, IRR ---
-# Cash flows for IRR (initial investment as negative, then monthly cash flows + liquidation of animals)
-cash_flows = [-total_capital] + df_month["Monthly_Cash_Flow"].tolist()
-if animals_left > 0:
-    liquidation_value = animals_left * 10000
-    cash_flows[-1] += liquidation_value
+# Total capital for financial calculations
+total_capital = total_sow_cost + shed_cost
 
-# ROI
-roi_pct = (sum(cash_flows[1:]) / -cash_flows[0]) * 100
+# -------------------------------
+# Final liquidation values for ROI
+# -------------------------------
 
-# CAGR
+# 1. Remaining animals in shed (growers) at final month
+liquidation_value_animals = animals_left * final_weight * sale_price
+
+# 2. Remaining sows value after depreciation
+months_elapsed = months
+remaining_sow_value = total_sows * sow_cost * max(0, 1 - (months_elapsed / 12) / sow_life_years)
+
+# 3. Remaining shed value after depreciation
+remaining_shed_value = shed_cost * max(0, 1 - (months_elapsed / 12) / shed_life_years)
+
+# 4. Total final asset value
+total_final_assets = liquidation_value_animals + remaining_sow_value + remaining_shed_value
+
+# 5. Adjusted ROI including cash flow + remaining assets
+adjusted_roi_pct = ((cumulative_cash_flow + total_final_assets) / total_capital) * 100
+
+# CAGR on realized cash flows (ignore unsold stock)
 years = months / 12
-final_value = -cash_flows[0] + sum(cash_flows[1:])
-cagr_pct = ((final_value / -cash_flows[0])**(1/years) - 1) * 100 if final_value > 0 else 0
+initial_investment = total_capital
+final_cash_position = cumulative_cash_flow
+if initial_investment > 0 and final_cash_position > 0:
+    realized_cagr = ((final_cash_position + initial_investment) / initial_investment) ** (1 / years) - 1
+else:
+    realized_cagr = 0
 
-st.write(f"CAGR: {cagr_pct:.2f}%")
-st.write(f"ROI with liquidation value: {roi_pct:.2f}%")
+# Return along with other summary metrics
+
+return df_month, df_year, total_sow_cost, shed_cost, first_sale_cash_needed, total_pigs_sold, total_pigs_born, animals_left, cumulative_cash_flow, total_interest_paid, break_even_month, profit_after_break_even, average_monthly_profit, avg_profit_after_breakeven, total_crossings, total_roi_pct, realized_cagr
+
+st.write(f"CAGR (Realized Cash Flows): {realized_cagr*100:.2f}%")
+st.write(f"Total ROI including remaining assets: {adjusted_roi_pct:.2f}%")
 
 
 # -------------------------------
