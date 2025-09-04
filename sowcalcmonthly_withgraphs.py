@@ -3,33 +3,6 @@ import streamlit as st
 import pandas as pd
 # import numpy_financial as npf
 
-# import matplotlib.pyplot as plt
-def compute_irr(cashflows, guess=0.1, max_iter=1000, tol=1e-6):
-    """Manual IRR calculator with safety checks (Newton's method)."""
-    # Ensure cashflows are floats
-    cashflows = [float(cf) for cf in cashflows if cf is not None]
-
-    rate = guess
-    for _ in range(max_iter):
-        try:
-            npv = sum(cf / (1 + rate) ** i for i, cf in enumerate(cashflows))
-            d_npv = sum(-i * cf / (1 + rate) ** (i + 1) for i, cf in enumerate(cashflows))
-        except ZeroDivisionError:
-            return None
-
-        if abs(d_npv) < 1e-10:  # avoid divide by zero
-            break
-
-        new_rate = rate - npv / d_npv
-        if not (-0.9999 < new_rate < 10):  # sanity bounds
-            return None
-
-        if abs(new_rate - rate) < tol:
-            return new_rate
-
-        rate = new_rate
-
-    return None
 # Sow Rotation Simulator with realistic monthly sales
 # -------------------------------
 def sow_rotation_simulator(
@@ -392,20 +365,11 @@ irr_pct = irr * 100 if irr is not None else None
 
 st.write(f"ROI with liquidation value: {roi_pct:.2f}%")
 st.write(f"CAGR: {cagr_pct:.2f}%")
-if irr_pct is not None:
-    st.write(f"IRR: {irr_pct:.2f}%")
-else:
-    st.write("IRR: Could not be calculated")
-
-# -------------------------------
-# Generate and Display Plots in Streamlit
-# -------------------------------
-# -------------------------------
-# Generate and Display Plots in Streamlit (no matplotlib)
 
 # -------------------------------
 # Generate and Display Plots in Streamlit (Altair only)
 # -------------------------------
+
 import altair as alt
 
 st.subheader("Simulation Plots")
