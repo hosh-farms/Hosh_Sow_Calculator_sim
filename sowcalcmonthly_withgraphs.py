@@ -493,3 +493,55 @@ bar_chart = alt.Chart(total_costs).mark_bar().encode(
 ).properties(height=500)
 
 st.altair_chart(bar_chart, use_container_width=True)
+
+# ROI & CAGR Comparison Graph
+st.subheader("ROI & Realized CAGR Comparison")
+
+df_roi_cagr = pd.DataFrame({
+    "Metric": ["ROI (Cash Flow)", "ROI with Assets", "Realized CAGR"],
+    "Value": [total_roi_pct, roi_with_assets, realized_cagr]
+})
+
+roi_chart = alt.Chart(df_roi_cagr).mark_bar(color='teal').encode(
+    x=alt.X("Metric", sort=None),
+    y=alt.Y("Value", title="Percentage (%)"),
+    tooltip=["Metric", "Value"]
+).properties(height=400)
+
+st.altair_chart(roi_chart, use_container_width=True)
+
+# ---- Plot 5: ROI and CAGR Over Time ----
+st.write("ROI & Realized CAGR Over Time")
+
+# Cumulative ROI (including final assets proportionally by month)
+shed_remaining_series = shed_cost * (1 - (df_month['Month'] / (shed_life_years*12))).clip(lower=0)
+sows_remaining_series = total_sow_cost * (1 - (df_month['Month'] / (sow_life_years*12))).clip(lower=0)
+growers_remaining_series = df_month['Growers'] * final_weight * sale_price
+
+final_assets_series = shed_remaining_series + sows_remaining_series + growers_remaining_series
+cumulative_roi_with_assets = ((df_month['Cumulative_Cash_Flow'] + final_assets_series) / total_capital) * 100
+cumulative_roi_cash_only = (df_month['Cumulative_Cash_Flow'] / total_capital) * 100
+
+# Realized CAGR series (from first sale)
+initial_outflow_series = first_sale_wc if first_sale_wc > 0 else 1
+months_elapsed = df_month['Month']
+realized_cagr_series = ((df_month['Cumulative_Cash_Flow'] + initial_outflow_series) / initial_outflow_series) ** (1 / (months_elapsed / 12)) - 1
+realized_cagr_series = realized_cagr_series * 100
+
+df_roi_cagr_time = pd.DataFrame({
+    "Month": df_month['Month'],
+    "ROI_Cash": cumulative_roi_cash_only,
+    "ROI_with_Assets": cumulative_roi_with_assets,
+    "Realized_CAGR": realized_cagr_series
+})
+
+df_roi_cagr_melt = df_roi_cagr_time.melt(id_vars=["Month"], var_name="Metric", value_name="Value")
+
+roi_cagr_line = alt.Chart(df_roi_cagr_melt).mark_line(point=True).encode(
+    x="Month:O",
+    y=alt.Y("Value", title="Percentage (%)"),
+    color="Metric",
+    tooltip=["Month", "Metric", "Value"]
+).properties(height=400)
+
+st.altair_chart(roi_cagr_line, use_container_width=True)
