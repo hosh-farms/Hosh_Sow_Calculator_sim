@@ -263,7 +263,7 @@ def sow_rotation_simulator(
         realized_cagr = ((realized_cash.at[last_idx] / realized_cash.at[first_idx])**(1/years_realized) - 1) * 100
     else:
         realized_cagr = 0
-    return df_month, df_year, total_sow_cost, shed_cost, first_sale_cash_needed, total_pigs_sold, total_pigs_born, animals_left, cumulative_cash_flow, total_interest_paid, break_even_month, profit_after_break_even, average_monthly_profit, avg_profit_after_breakeven, total_crossings, roi_with_assets, realized_cagr
+    return df_month, df_year, total_sow_cost, shed_cost, first_sale_cash_needed, total_pigs_sold, total_pigs_born, animals_left, cumulative_cash_flow, total_interest_paid, break_even_month, profit_after_break_even, average_monthly_profit, avg_profit_after_breakeven, total_crossings, roi_with_assets, realized_cagr, total_roi_pct
 # -------------------------------
 # Streamlit UI
 # -------------------------------
