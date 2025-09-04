@@ -29,7 +29,7 @@ def compute_irr(cashflows, guess=0.1, max_iter=1000, tol=1e-6):
 
         rate = new_rate
 
-    return None----------------
+    return None
 # Sow Rotation Simulator with realistic monthly sales
 # -------------------------------
 def sow_rotation_simulator(
