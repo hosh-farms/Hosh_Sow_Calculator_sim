@@ -341,6 +341,35 @@ st.write(f"average_monthly_profit: ₹{average_monthly_profit:,.0f}")
 st.write(f"Average Monthly Profit after Break-even: ₹{avg_profit_after_breakeven:,.2f}")
 st.write(f"Total Interest Paid Over Loan Tenure: ₹{total_interest_paid:,.0f}")
 st.write(f"Total ROI: {total_roi_pct:.2f}%")
+# ---- Final Financial Metrics ----
+total_capital = total_project_cost  # or whatever variable you already use
+months = len(df_month)
+
+# liquidation value for unsold animals
+liquidation_value = animals_left * final_weight * sale_price  
+
+final_value = df_month["Cumulative_Cash_Flow"].iloc[-1] + liquidation_value
+
+# ROI
+roi_pct = ((final_value - total_capital) / total_capital) * 100
+
+# CAGR
+years = months / 12
+cagr = (final_value / total_capital) ** (1 / years) - 1
+
+# IRR
+cash_flows = [-total_capital] + df_month["Monthly_Cash_Flow"].tolist()
+cash_flows[-1] += liquidation_value
+irr = np.irr(cash_flows)
+
+# ---- Add to Summary ----
+st.subheader("📊 Final Financial Summary")
+st.write(f"**Total Capital Invested:** ₹{total_capital:,.0f}")
+st.write(f"**Final Value (Cash + Stock):** ₹{final_value:,.0f}")
+st.write(f"**Total Profit (incl. liquidation):** ₹{final_value - total_capital:,.0f}")
+st.write(f"**ROI:** {roi_pct:.2f}%")
+st.write(f"**CAGR:** {cagr*100:.2f}%")
+st.write(f"**IRR:** {irr*100:.2f}%")
 
 
 # -------------------------------
