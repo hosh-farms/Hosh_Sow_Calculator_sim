@@ -364,9 +364,8 @@ st.write(f"Average Monthly Profit after Break-even: ₹{avg_profit_after_breakev
 st.write(f"Total Interest Paid Over Loan Tenure: ₹{total_interest_paid:,.0f}")
 st.write(f"Total ROI: {total_roi_pct:.2f}%")
 # ------------------------------
-st.write(f"Realized CAGR: {realized_cagr:.2f}%")
-st.write(f"ROI including final assets: {roi_with_assets:.2f}%")
-
+st.write(f"Total ROI including final assets: {roi_with_assets:.2f}%")
+st.write(f"Realized CAGR (on cash flows): {realized_cagr:.2f}%")
 
 
 # -------------------------------
