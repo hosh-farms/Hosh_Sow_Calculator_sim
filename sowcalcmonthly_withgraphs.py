@@ -390,7 +390,7 @@ cagr_pct = ((final_value / -cash_flows[0])**(1/years) - 1) * 100 if final_value 
 irr = compute_irr(cash_flows)
 irr_pct = irr * 100 if irr is not None else None
 
-st.write(f"ROI: {roi_pct:.2f}%")
+st.write(f"ROI with liquidation value: {roi_pct:.2f}%")
 st.write(f"CAGR: {cagr_pct:.2f}%")
 if irr_pct is not None:
     st.write(f"IRR: {irr_pct:.2f}%")
