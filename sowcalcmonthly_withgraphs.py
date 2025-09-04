@@ -232,13 +232,13 @@ def sow_rotation_simulator(
     total_interest_paid = float(total_interest_paid) if 'total_interest_paid' in locals() or 'total_interest_paid' in globals() else 0.0
 
     # Total ROI (over simulation)
-    total_roi_pct = (cumulative_cash_flow / total_capital) * 100 if total_capital > 0 else 0
+    total_roi_pct = (cumulative_cash_flow / total_capital + first_sale_cash_needed) * 100 if total_capital > 0 else 0
 
     # Average monthly profit (overall)
     average_monthly_profit  = df_month['Monthly_Profit'].mean()
     average_monthly_profit_after_loan  = df_month['Monthly_Cash_Flow'].mean()
    # Total ROI based on cash flow only
-    total_roi_pct = (cumulative_cash_flow / total_capital) * 100 if total_capital > 0 else 0
+    # total_roi_pct = (cumulative_cash_flow / total_capital) * 100 if total_capital > 0 else 0
 
     # Calculate final asset value
     shed_remaining_value = shed_cost * max(0, (shed_life_years*12 - months)/(shed_life_years*12))
