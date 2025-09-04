@@ -237,9 +237,32 @@ def sow_rotation_simulator(
     # Average monthly profit (overall)
     average_monthly_profit  = df_month['Monthly_Profit'].mean()
     average_monthly_profit_after_loan  = df_month['Monthly_Cash_Flow'].mean()
+    # -------------------------------
+    # Final Assets for ROI
+    # -------------------------------
+    # Remaining shed value after depreciation
+    shed_value_remaining = shed_cost * max(0, (shed_life_years*12 - months) / (shed_life_years*12))
+    
+    # Remaining sows value
+    sows_remaining_value = current_sows * sow_cost * max(0, (sow_life_years*12 - months) / (sow_life_years*12))
+    
+    # Remaining pigs in shed value (assuming same final weight and sale price)
+    unsold_pigs_value = animals_left * final_weight * sale_price
+    
+    # ROI including final assets
+    roi_with_assets = ((cumulative_cash_flow + shed_value_remaining + sows_remaining_value + unsold_pigs_value) / total_capital) * 100
+    
+    # -------------------------------
+    # CAGR on realized cash flow only
+    # -------------------------------
+    years = months / 12
+    if cumulative_cash_flow > 0 and total_capital > 0 and years > 0:
+        realized_cagr = (cumulative_cash_flow / total_capital) ** (1 / years) - 1
+        realized_cagr *= 100  # as percentage
+    else:
+        realized_cagr = 0
     # Return all relevant data for plotting and summary
-    return df_month, df_year, total_sow_cost, shed_cost, first_sale_cash_needed, total_pigs_sold, total_pigs_born, animals_left, cumulative_cash_flow, total_interest_paid, break_even_month, profit_after_break_even, average_monthly_profit, avg_profit_after_breakeven, total_crossings, total_roi_pct
-
+return df_month, df_year, total_sow_cost, shed_cost, first_sale_cash_needed, total_pigs_sold, total_pigs_born, animals_left, cumulative_cash_flow, total_interest_paid, break_even_month, profit_after_break_even, average_monthly_profit, avg_profit_after_breakeven, total_crossings, roi_with_assets, realized_cagr
 # -------------------------------
 # Streamlit UI
 # -------------------------------
@@ -340,46 +363,7 @@ st.write(f"average_monthly_profit: ₹{average_monthly_profit:,.0f}")
 st.write(f"Average Monthly Profit after Break-even: ₹{avg_profit_after_breakeven:,.2f}")
 st.write(f"Total Interest Paid Over Loan Tenure: ₹{total_interest_paid:,.0f}")
 st.write(f"Total ROI: {total_roi_pct:.2f}%")
-# -------------------------------
-# Additional Financial Metrics
-# -------------------------------
-
-# Total capital for financial calculations
-total_capital = total_sow_cost + shed_cost
-
-# -------------------------------
-# Final liquidation values for ROI
-# -------------------------------
-
-# 1. Remaining animals in shed (growers) at final month
-liquidation_value_animals = animals_left * final_weight * sale_price
-
-# 2. Remaining sows value after depreciation
-months_elapsed = months
-remaining_sow_value = total_sows * sow_cost * max(0, 1 - (months_elapsed / 12) / sow_life_years)
-
-# 3. Remaining shed value after depreciation
-remaining_shed_value = shed_cost * max(0, 1 - (months_elapsed / 12) / shed_life_years)
-
-# 4. Total final asset value
-total_final_assets = liquidation_value_animals + remaining_sow_value + remaining_shed_value
-
-# 5. Adjusted ROI including cash flow + remaining assets
-adjusted_roi_pct = ((cumulative_cash_flow + total_final_assets) / total_capital) * 100
-
-# CAGR on realized cash flows (ignore unsold stock)
-years = months / 12
-initial_investment = total_capital
-final_cash_position = cumulative_cash_flow
-if initial_investment > 0 and final_cash_position > 0:
-    realized_cagr = ((final_cash_position + initial_investment) / initial_investment) ** (1 / years) - 1
-else:
-    realized_cagr = 0
-
-# Return along with other summary metrics
-
-return df_month, df_year, total_sow_cost, shed_cost, first_sale_cash_needed, total_pigs_sold, total_pigs_born, animals_left, cumulative_cash_flow, total_interest_paid, break_even_month, profit_after_break_even, average_monthly_profit, avg_profit_after_breakeven, total_crossings, total_roi_pct, realized_cagr
-
+# ------------------------------
 st.write(f"CAGR (Realized Cash Flows): {realized_cagr*100:.2f}%")
 st.write(f"Total ROI including remaining assets: {adjusted_roi_pct:.2f}%")
 
