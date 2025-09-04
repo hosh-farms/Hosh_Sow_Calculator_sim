@@ -248,7 +248,7 @@ def sow_rotation_simulator(
     final_assets_value = shed_remaining_value + sows_remaining_value + growers_remaining_value
     
     # ROI including final assets
-    roi_with_assets = ((cumulative_cash_flow + final_assets_value) / total_capital) * 100 if total_capital > 0 else 0
+    roi_with_assets = ((cumulative_cash_flow + final_assets_value) / total_capital - 1) * 100 if total_capital > 0 else 0
     
     # Identify first and last cash flow (realized)
     realized_cash = df_month['Cumulative_Cash_Flow']
@@ -554,6 +554,42 @@ chart = alt.Chart(df_all_lines).mark_line(point=True).encode(
 )
 
 st.altair_chart(chart, use_container_width=True)
+
+st.subheader("ROI & Realized CAGR Over Time")
+
+# Compute cumulative ROI and realized CAGR over time
+cumulative_cash = df_month['Cumulative_Cash_Flow']
+total_capital = total_sow_cost + shed_cost_val
+months_array = df_month['Month']
+
+# Cumulative ROI at each month
+cumulative_roi = (cumulative_cash / total_capital) * 100
+
+# Realized CAGR at each month (avoid first zero division)
+initial_outflow = first_sale_wc if first_sale_wc > 0 else 1
+years_elapsed = months_array / 12
+realized_cagr_over_time = ((cumulative_cash + initial_outflow) / initial_outflow) ** (1/years_elapsed) - 1
+realized_cagr_over_time = realized_cagr_over_time * 100  # convert to %
+
+# Build dataframe for plotting
+df_roi_cagr = pd.DataFrame({
+    'Month': months_array,
+    'Cumulative ROI (%)': cumulative_roi,
+    'Realized CAGR (%)': realized_cagr_over_time
+})
+
+# Melt for Altair
+df_roi_melt = df_roi_cagr.melt(id_vars='Month', var_name='Metric', value_name='Value')
+
+# Plot
+roi_cagr_chart = alt.Chart(df_roi_melt).mark_line(point=True).encode(
+    x=alt.X('Month:O', title='Month'),
+    y=alt.Y('Value:Q', title='Percentage'),
+    color='Metric',
+    tooltip=['Month', 'Metric', 'Value']
+).properties(height=400)
+
+st.altair_chart(roi_cagr_chart, use_container_width=True)
 
 # # ---- Plot 5: ROI and CAGR Over Time ----
 # st.write("ROI & Realized CAGR Over Time")
