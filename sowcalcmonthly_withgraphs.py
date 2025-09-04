@@ -348,7 +348,7 @@ st.write(f"Total ROI: {total_roi_pct:.2f}%")
 # Cash flows for IRR (initial investment as negative, then monthly cash flows + liquidation of animals)
 cash_flows = [-total_capital] + df_month["Monthly_Cash_Flow"].tolist()
 if animals_left > 0:
-    liquidation_value = animals_left * final_weight * sale_price
+    liquidation_value = animals_left * 10000
     cash_flows[-1] += liquidation_value
 
 # ROI
