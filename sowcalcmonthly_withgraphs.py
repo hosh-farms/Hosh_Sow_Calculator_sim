@@ -250,11 +250,19 @@ def sow_rotation_simulator(
     # ROI including final assets
     roi_with_assets = ((cumulative_cash_flow + final_assets_value) / total_capital) * 100 if total_capital > 0 else 0
     
-    # CAGR based on realized cash flows
-    first_cash_inflow_idx = df_month[df_month['Monthly_Cash_Flow'] > 0].index.min()
-    last_cash_inflow_idx = df_month[df_month['Month']].idxmax()
-    years_realized = (df_month['Month'].iloc[last_cash_inflow_idx] - df_month['Month'].iloc[first_cash_inflow_idx] + 1) / 12
-    realized_cagr = ((df_month['Cumulative_Cash_Flow'].iloc[last_cash_inflow_idx] / df_month['Cumulative_Cash_Flow'].iloc[first_cash_inflow_idx])**(1/years_realized) - 1) * 100 if years_realized > 0 else 0
+    # Identify first and last cash flow (realized)
+    realized_cash = df_month['Cumulative_Cash_Flow']
+    first_idx = realized_cash.ne(0).idxmax()  # first non-zero cash flow
+    last_idx = realized_cash.last_valid_index()  # last available month
+    
+    # Calculate number of years over realized period
+    years_realized = (df_month.at[last_idx, 'Month'] - df_month.at[first_idx, 'Month'] + 1) / 12
+    
+    # CAGR on realized cash flows
+    if years_realized > 0 and realized_cash.at[first_idx] != 0:
+        realized_cagr = ((realized_cash.at[last_idx] / realized_cash.at[first_idx])**(1/years_realized) - 1) * 100
+    else:
+        realized_cagr = 0
     return df_month, df_year, total_sow_cost, shed_cost, first_sale_cash_needed, total_pigs_sold, total_pigs_born, animals_left, cumulative_cash_flow, total_interest_paid, break_even_month, profit_after_break_even, average_monthly_profit, avg_profit_after_breakeven, total_crossings, roi_with_assets, realized_cagr
 # -------------------------------
 # Streamlit UI
