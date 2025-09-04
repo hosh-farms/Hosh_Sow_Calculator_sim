@@ -237,31 +237,24 @@ def sow_rotation_simulator(
     # Average monthly profit (overall)
     average_monthly_profit  = df_month['Monthly_Profit'].mean()
     average_monthly_profit_after_loan  = df_month['Monthly_Cash_Flow'].mean()
-    # -------------------------------
-    # Final Assets for ROI
-    # -------------------------------
-    # Remaining shed value after depreciation
-    shed_value_remaining = shed_cost * max(0, (shed_life_years*12 - months) / (shed_life_years*12))
+   # Total ROI based on cash flow only
+    total_roi_pct = (cumulative_cash_flow / total_capital) * 100 if total_capital > 0 else 0
+
+    # Calculate final asset value
+    shed_remaining_value = shed_cost * max(0, (shed_life_years*12 - months)/(shed_life_years*12))
+    sows_remaining_value = current_sows * sow_cost * max(0, (sow_life_years*12 - months)/(sow_life_years*12))
+    growers_remaining_value = animals_left * final_weight * sale_price  # market value
     
-    # Remaining sows value
-    sows_remaining_value = current_sows * sow_cost * max(0, (sow_life_years*12 - months) / (sow_life_years*12))
-    
-    # Remaining pigs in shed value (assuming same final weight and sale price)
-    unsold_pigs_value = animals_left * final_weight * sale_price
+    final_assets_value = shed_remaining_value + sows_remaining_value + growers_remaining_value
     
     # ROI including final assets
-    roi_with_assets = ((cumulative_cash_flow + shed_value_remaining + sows_remaining_value + unsold_pigs_value) / total_capital) * 100
+    roi_with_assets = ((cumulative_cash_flow + final_assets_value) / total_capital) * 100 if total_capital > 0 else 0
     
-    # -------------------------------
-    # CAGR on realized cash flow only
-    # -------------------------------
-    years = months / 12
-    if cumulative_cash_flow > 0 and total_capital > 0 and years > 0:
-        realized_cagr = (cumulative_cash_flow / total_capital) ** (1 / years) - 1
-        realized_cagr *= 100  # as percentage
-    else:
-        realized_cagr = 0
-    # Return all relevant data for plotting and summary
+    # CAGR based on realized cash flows
+    first_cash_inflow_idx = df_month[df_month['Monthly_Cash_Flow'] > 0].index.min()
+    last_cash_inflow_idx = df_month[df_month['Month']].idxmax()
+    years_realized = (df_month['Month'].iloc[last_cash_inflow_idx] - df_month['Month'].iloc[first_cash_inflow_idx] + 1) / 12
+    realized_cagr = ((df_month['Cumulative_Cash_Flow'].iloc[last_cash_inflow_idx] / df_month['Cumulative_Cash_Flow'].iloc[first_cash_inflow_idx])**(1/years_realized) - 1) * 100 if years_realized > 0 else 0
     return df_month, df_year, total_sow_cost, shed_cost, first_sale_cash_needed, total_pigs_sold, total_pigs_born, animals_left, cumulative_cash_flow, total_interest_paid, break_even_month, profit_after_break_even, average_monthly_profit, avg_profit_after_breakeven, total_crossings, roi_with_assets, realized_cagr
 # -------------------------------
 # Streamlit UI
@@ -363,9 +356,9 @@ st.write(f"average_monthly_profit: ₹{average_monthly_profit:,.0f}")
 st.write(f"Average Monthly Profit after Break-even: ₹{avg_profit_after_breakeven:,.2f}")
 st.write(f"Total Interest Paid Over Loan Tenure: ₹{total_interest_paid:,.0f}")
 st.write(f"Total ROI: {total_roi_pct:.2f}%")
-# ------------------------------
+st.write(f"Realized CAGR: {realized_cagr:.2f}%")
 st.write(f"Total ROI including final assets: {roi_with_assets:.2f}%")
-st.write(f"Realized CAGR (on cash flows): {realized_cagr:.2f}%")
+
 
 
 # -------------------------------
