@@ -510,6 +510,51 @@ roi_chart = alt.Chart(df_roi_cagr).mark_bar(color='teal').encode(
 
 st.altair_chart(roi_chart, use_container_width=True)
 
+import altair as alt
+import pandas as pd
+
+# Prepare data
+df_cumulative = pd.DataFrame({
+    "Month": df_month["Month"],
+    "Cumulative_Cash_Flow": df_month["Cumulative_Cash_Flow"],
+    "Cumulative_Profit": df_month["Monthly_Cash_Flow"].cumsum(),
+})
+
+# Add ROI and CAGR as horizontal lines (percentages)
+roi_line = pd.DataFrame({
+    "Metric": ["ROI with Assets"]*len(df_cumulative),
+    "Month": df_cumulative["Month"],
+    "Value": [roi_with_assets]*len(df_cumulative)
+})
+
+cagr_line = pd.DataFrame({
+    "Metric": ["Realized CAGR"]*len(df_cumulative),
+    "Month": df_cumulative["Month"],
+    "Value": [realized_cagr]*len(df_cumulative)
+})
+
+# Melt cash/ profit for line chart
+df_melt = df_cumulative.melt(id_vars=["Month"], 
+                             value_vars=["Cumulative_Cash_Flow", "Cumulative_Profit"],
+                             var_name="Metric", value_name="Value")
+
+# Combine all lines
+df_all_lines = pd.concat([df_melt, roi_line, cagr_line], ignore_index=True)
+
+# Chart
+chart = alt.Chart(df_all_lines).mark_line(point=True).encode(
+    x=alt.X("Month:Q", title="Month"),
+    y=alt.Y("Value:Q", title="Amount / %"),
+    color="Metric:N",
+    tooltip=["Month", "Metric", "Value"]
+).properties(
+    height=400,
+    width=800,
+    title="Cumulative Cash Flow, Profit, ROI, and Realized CAGR"
+)
+
+st.altair_chart(chart, use_container_width=True)
+
 # # ---- Plot 5: ROI and CAGR Over Time ----
 # st.write("ROI & Realized CAGR Over Time")
 
