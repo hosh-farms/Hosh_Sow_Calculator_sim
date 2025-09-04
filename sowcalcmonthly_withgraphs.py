@@ -1,10 +1,22 @@
 
 import streamlit as st
 import pandas as pd
-import numpy_financial as npf
+# import numpy_financial as npf
 
 # import matplotlib.pyplot as plt
-
+def compute_irr(cashflows, guess=0.1, max_iter=1000, tol=1e-6):
+    """Manual IRR calculator (Newton's method)."""
+    rate = guess
+    for _ in range(max_iter):
+        npv = sum(cf / (1 + rate)**i for i, cf in enumerate(cashflows))
+        d_npv = sum(-i * cf / (1 + rate)**(i+1) for i, cf in enumerate(cashflows))
+        if abs(d_npv) < 1e-10:
+            break
+        new_rate = rate - npv / d_npv
+        if abs(new_rate - rate) < tol:
+            return new_rate
+        rate = new_rate
+    return None
 # -------------------------------
 # Sow Rotation Simulator with realistic monthly sales
 # -------------------------------
@@ -347,34 +359,29 @@ st.write(f"Total ROI: {total_roi_pct:.2f}%")
 # Additional Financial Metrics
 # -------------------------------
 
-# -------------------------------
-# Advanced Financial Metrics
-# -------------------------------
-# Cash flows: initial investment (negative) + monthly cash flows + liquidation value at end
-initial_investment = -(total_sow_cost + shed_cost_val)
-liquidation_value = animals_left * final_weight * sale_price
-cash_flows = [initial_investment] + df_month["Monthly_Cash_Flow"].tolist()
-cash_flows[-1] += liquidation_value  # add liquidation in final month
+# --- ROI, CAGR, IRR ---
+# Cash flows for IRR (initial investment as negative, then monthly cash flows + liquidation of animals)
+cash_flows = [-total_capital] + df_month["Monthly_Cash_Flow"].tolist()
+if animals_left > 0:
+    liquidation_value = animals_left * final_weight * sale_price
+    cash_flows[-1] += liquidation_value
 
-# ROI (with liquidation)
-roi_with_assets = ((sum(cash_flows) / -initial_investment) * 100) if initial_investment < 0 else 0
+# ROI
+roi_pct = (sum(cash_flows[1:]) / -cash_flows[0]) * 100
 
 # CAGR
-final_value = -initial_investment + sum(cash_flows)
 years = months / 12
-cagr = ((final_value / -initial_investment) ** (1 / years) - 1) * 100 if initial_investment < 0 else 0
+final_value = -cash_flows[0] + sum(cash_flows[1:])
+cagr_pct = ((final_value / -cash_flows[0])**(1/years) - 1) * 100 if final_value > 0 else 0
 
 # IRR
-try:
-    irr = npf.irr(cash_flows) * 100
-except Exception:
-    irr = None
+irr = compute_irr(cash_flows)
+irr_pct = irr * 100 if irr is not None else None
 
-st.subheader("📊 Advanced Financial Metrics")
-st.write(f"ROI (with liquidation value): {roi_with_assets:.2f}%")
-st.write(f"CAGR: {cagr:.2f}%")
-if irr is not None:
-    st.write(f"IRR: {irr:.2f}%")
+st.write(f"ROI: {roi_pct:.2f}%")
+st.write(f"CAGR: {cagr_pct:.2f}%")
+if irr_pct is not None:
+    st.write(f"IRR: {irr_pct:.2f}%")
 else:
     st.write("IRR: Could not be calculated")
 
