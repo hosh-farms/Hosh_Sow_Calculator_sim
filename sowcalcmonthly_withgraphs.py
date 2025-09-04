@@ -1,5 +1,4 @@
-import sys
-!{sys.executable} -m pip install numpy-financial
+
 import streamlit as st
 import pandas as pd
 import numpy_financial as npf
