@@ -1,4 +1,5 @@
-# Save this file and run with:
+# Save as: sowcalc_streamlit_final.py
+# Run with:
 # streamlit run sowcalc_streamlit_final.py
 
 import streamlit as st
@@ -8,7 +9,7 @@ import altair as alt
 
 # -------------------------------
 # Sow Rotation Simulator with realistic monthly sales
-# (kept your logic; fixed cumulative cashflow, ROI, CAGR)
+# (kept your logic; corrected cumulative cash & ROI/CAGR)
 # -------------------------------
 def sow_rotation_simulator(
     total_sows=30,
@@ -39,7 +40,7 @@ def sow_rotation_simulator(
     land_lease=10000,
     months=60
 ):
-    # --- keep all your original simulation logic ---
+    # --- keep your production/feeding/sales logic exactly as you had it ---
     current_sows = total_sows
     monthly_data = []
 
@@ -66,6 +67,7 @@ def sow_rotation_simulator(
     first_sale_cash_needed = 0.0         # working capital required until first sale (running sum)
     first_sale_done = False
 
+    # monthly simulation loop
     for month in range(1, months + 1):
         sow_feed_cost = current_sows * sow_feed_intake * 30 * sow_feed_price
         staff_cost = supervisor_salary + n_workers * worker_salary
@@ -125,9 +127,9 @@ def sow_rotation_simulator(
             # Remove sold batches from ready list
             ready_for_sale_batches = [b for b in ready_for_sale_batches if b['batch_id'] not in batches_sold_ids]
 
-        # Track first sale working capital (running sum until first sale)
+        # Track first sale working capital (running sum until first sale occurs)
         if not first_sale_done:
-            first_sale_cash_needed += sow_feed_cost + grower_feed_cost + staff_cost + mgmt_fixed + medicine_cost + electricity_cost + land_lease
+            first_sale_cash_needed += (sow_feed_cost + grower_feed_cost + staff_cost + mgmt_fixed + medicine_cost + electricity_cost + land_lease)
         if sold_pigs > 0 and not first_sale_done:
             first_sale_done = True
 
@@ -152,117 +154,114 @@ def sow_rotation_simulator(
         monthly_data.append({
             'Month': month,
             'Sows_Crossed': round(sows_crossed),
-            'Piglets_Born_Alive': piglets_with_sow,
-            'Growers': current_growers,
-            'Sold_Pigs': sold_pigs,
-            'Sow_Feed_Cost': round(sow_feed_cost),
-            'Grower_Feed_Cost': round(grower_feed_cost),
-            'Staff_Cost': round(staff_cost),
-            'Other_Fixed_Costs': round(other_fixed),
-            'Mgmt_Fee': round(mgmt_fixed),
-            'Mgmt_Comm': round(mgmt_comm_cost),
-            'Total_Operating_Cost': round(total_operating_cost),
-            'Revenue': round(revenue),
-            'Monthly_Profit': round(monthly_profit),
-            'Loan_EMI': round(loan_payment),
-            'Monthly_Cash_Flow': round(monthly_cash_flow),
-            'Depreciation': round(dep)
+            'Piglets_Born_Alive': round(piglets_with_sow),
+            'Growers': round(current_growers),
+            'Sold_Pigs': round(sold_pigs),
+            'Sow_Feed_Cost': sow_feed_cost,
+            'Grower_Feed_Cost': grower_feed_cost,
+            'Staff_Cost': staff_cost,
+            'Other_Fixed_Costs': other_fixed,
+            'Mgmt_Fee': mgmt_fixed,
+            'Mgmt_Comm': mgmt_comm_cost,
+            'Total_Operating_Cost': total_operating_cost,
+            'Revenue': revenue,
+            'Monthly_Profit': monthly_profit,
+            'Loan_EMI': loan_payment,
+            'Monthly_Cash_Flow': monthly_cash_flow,
+            'Depreciation': dep
         })
 
+    # build DataFrame
     df_month = pd.DataFrame(monthly_data)
 
-    # Yearly summary (keep original approach)
+    # Yearly summary (kept)
     df_year = df_month.groupby(((df_month['Month']-1)//12)*12).sum()
     df_year.index = [f"Year {i+1}" for i in range(len(df_year))]
 
-    # Total animals left in shed
+    # Totals & interest paid recompute (approx)
     animals_left = int(sum(batch['piglets'] for batch in batches if not batch['sold'] and batch['grower_end_month'] > months))
     total_interest_paid = 0.0
-
-    # recompute interest paid over simulated months
     loan_balance = loan_amount
-    total_interest_paid = 0.0
     for m in range(1, months + 1):
         monthly_interest = loan_balance * monthly_rate
         if m <= moratorium_months:
             loan_balance += monthly_interest
-            loan_payment = 0
         elif m <= total_months:
             principal = emi - monthly_interest
             loan_balance -= principal
-            loan_payment = emi
         else:
-            monthly_interest = 0
-            loan_payment = 0
+            monthly_interest = 0.0
         total_interest_paid += monthly_interest
 
-    # -------------------------
-    # FIXED/FINAL FINANCIALS (CONSISTENT)
-    # -------------------------
-    # initial capital and working capital
-    total_sow_cost = total_sows * sow_cost   # sow cost (consistent with earlier)
+    # --- Final financial calculations (consistent and standard) ---
+    total_sow_cost = sow_cost * total_sows
     shed_cost_val = shed_cost
-    # first_sale_cash_needed already calculated during the loop (running sum until first sale)
+    # first_sale_cash_needed already accumulated in the loop
+    first_sale_wc = float(first_sale_cash_needed)
+
+    # Initial investment = capital + working capital required until first sale
     initial_capital = shed_cost_val + total_sow_cost
-    initial_working_capital = first_sale_cash_needed
-    initial_investment = initial_capital + initial_working_capital
+    initial_investment = initial_capital + first_sale_wc
 
-    # Build cumulative cash flow series that starts at -initial_investment and adds monthly cash flows
-    # monthly cash flows - ensure using the (unrounded) values if present
-    cash_series = df_month['Monthly_Cash_Flow'].astype(float).fillna(0.0).values.tolist()
+    # monthly cash series (use unrounded floats for accuracy)
+    cash_series = df_month['Monthly_Cash_Flow'].astype(float).fillna(0.0)
 
-    # cumulative flow: start at -initial_investment then add each month's net cashflow
-    cumulative_cash_flow = []
-    running = -initial_investment
-    for val in cash_series:
-        running += val
-        cumulative_cash_flow.append(running)
+    # cumulative cash flow series starting at -initial_investment (this is what you asked)
+    cumulative_cash_series = -initial_investment + cash_series.cumsum()
 
-    # attach to df_month (rounded)
-    df_month['Cumulative_Cash_Flow'] = pd.Series(cumulative_cash_flow).round(0)
-    # cumulative profit (excl capital) as previously
-    df_month['Cumulative_Profit'] = df_month['Monthly_Profit'].astype(float).cumsum().round(0)
+    # cumulative profit (exclude capital)
+    cumulative_profit_series = df_month['Monthly_Profit'].astype(float).cumsum()
 
-    # final cumulative cash position (scalar)
-    final_cumulative_cash_flow = float(cumulative_cash_flow[-1]) if len(cumulative_cash_flow) > 0 else -initial_investment
+    # add back to df_month (rounded for display)
+    df_month['Cumulative_Cash_Flow'] = cumulative_cash_series.round(0)
+    df_month['Cumulative_Profit'] = cumulative_profit_series.round(0)
 
-    # total cash returned (sum of monthly cash flows)
-    total_cash_returned = float(sum(cash_series))
+    # final scalar values
+    final_cumulative_cash = float(cumulative_cash_series.iloc[-1]) if len(cumulative_cash_series) > 0 else -initial_investment
+    total_cash_inflows = float(cash_series.sum())                 # total net cash received over simulation
+    final_cumulative_profit = float(cumulative_profit_series.iloc[-1]) if len(cumulative_profit_series) > 0 else 0.0
 
-    # final assets liquidation estimate
+    # Final asset liquidation estimates
     shed_remaining_value = shed_cost_val * max(0.0, (shed_life_years*12 - months)/(shed_life_years*12))
     sows_remaining_value = current_sows * sow_cost * max(0.0, (sow_life_years*12 - months)/(sow_life_years*12))
     growers_remaining_value = animals_left * final_weight * sale_price   # rough market value
+
     final_assets_value = shed_remaining_value + sows_remaining_value + growers_remaining_value
 
-    # ROI (cash only) = total cash returned / initial_investment * 100
-    roi_cash_pct = (total_cash_returned / initial_investment) * 100 if initial_investment > 0 else float('nan')
+    # --- ROI definitions (standard, explicit) ---
+    # total_cash_inflows: total net cash generated over months (does NOT include initial investment)
+    # total_return_including_assets = total_cash_inflows + final_assets_value
+    # ROI (cash-only) = (total_cash_inflows - initial_investment) / initial_investment
+    # ROI (incl assets) = (total_cash_inflows + final_assets_value - initial_investment) / initial_investment
 
-    # ROI including assets (liquidation)
-    roi_with_assets_pct = ((total_cash_returned + final_assets_value) / initial_investment) * 100 if initial_investment > 0 else float('nan')
+    if initial_investment > 0.0:
+        roi_cash_pct = ((total_cash_inflows - initial_investment) / initial_investment) * 100.0
+        roi_with_assets_pct = ((total_cash_inflows + final_assets_value - initial_investment) / initial_investment) * 100.0
+    else:
+        roi_cash_pct = float('nan')
+        roi_with_assets_pct = float('nan')
 
-    # Realized CAGR on cash-only flows (money multiple = total_cash_returned / initial_investment)
-    years = months / 12.0
+    # Realized CAGR on cash-only realized flows:
+    years = months / 12.0 if months > 0 else 0.0
     realized_cagr = float('nan')
-    if initial_investment > 0 and total_cash_returned > 0 and years > 0:
-        money_multiple = total_cash_returned / initial_investment
-        if money_multiple > 0:
-            realized_cagr = (money_multiple ** (1.0/years) - 1.0) * 100.0
+    if initial_investment > 0 and total_cash_inflows > 0 and years > 0:
+        money_multiple_cash = total_cash_inflows / initial_investment
+        # money_multiple_cash = (initial + profit)/initial; but here total_cash_inflows is total receipts,
+        # which is equivalent to (initial + net_profit). If your series behaves differently, re-check.
+        if money_multiple_cash > 0:
+            realized_cagr = (money_multiple_cash ** (1.0/years) - 1.0) * 100.0
+        else:
+            realized_cagr = float('nan')
 
-    # legacy total ROI (final cumulative cash with capital / initial_investment) if you need it
-    total_roi_pct_legacy = (final_cumulative_cash_flow / initial_investment) * 100 if initial_investment > 0 else float('nan')
-
-    # Break-even month (first month where cumulative cash w/ capital >= 0)
-    be_idx = [i for i, v in enumerate(cumulative_cash_flow) if v >= 0]
+    # Break-even month (first month cumulative_cash_series >= 0)
+    be_idx = cumulative_cash_series[cumulative_cash_series >= 0].index
     break_even_month = int(df_month.loc[be_idx[0], 'Month']) if len(be_idx) > 0 else None
 
-    # Profit after break-even (sum of monthly cash flow after that month)
+    # Profit after break-even: sum monthly profit after that month (inclusive)
     if break_even_month is not None:
-        # get df_month rows with Month > break_even_month (we treat profit after BE month)
-        profit_after_break_even = df_month.loc[df_month['Month'] > break_even_month, 'Monthly_Cash_Flow'].sum()
-        # average monthly profit after break-even
-        rem = df_month.loc[df_month['Month'] > break_even_month, 'Monthly_Profit']
-        avg_profit_after_breakeven = rem.mean() if not rem.empty else 0.0
+        profit_after_break_even = df_month.loc[df_month['Month'] >= break_even_month, 'Monthly_Profit'].sum()
+        months_after_breakeven = len(df_month.loc[df_month['Month'] >= break_even_month])
+        avg_profit_after_breakeven = (profit_after_break_even / months_after_breakeven) if months_after_breakeven > 0 else 0.0
     else:
         profit_after_break_even = 0.0
         avg_profit_after_breakeven = 0.0
@@ -270,17 +269,17 @@ def sow_rotation_simulator(
     average_monthly_profit = df_month['Monthly_Profit'].mean() if len(df_month) > 0 else 0.0
     total_crossings = int(df_month['Sows_Crossed'].sum()) if 'Sows_Crossed' in df_month.columns else 0
 
-    # Return in the exact order used by your UI
+    # return values in the same order the UI expects
     return (
         df_month,
         df_year,
         total_sow_cost,
         shed_cost_val,
-        first_sale_cash_needed,
+        first_sale_wc,
         total_pigs_sold,
         total_pigs_born,
         animals_left,
-        final_cumulative_cash_flow,   # cumulative_cash_flow scalar (ends at -initial_investment + sum(monthly_cash_flow))
+        final_cumulative_cash,          # final cumulative cash including -initial_investment starting point
         total_interest_paid,
         break_even_month,
         profit_after_break_even,
@@ -293,7 +292,7 @@ def sow_rotation_simulator(
     )
 
 # -------------------------------
-# Streamlit UI
+# Streamlit UI (unchanged except adapted to returned values)
 # -------------------------------
 st.set_page_config(layout="wide", page_title="House of Supreme Ham Simulator")
 st.title("🐷 House of Supreme Ham Simulator")
@@ -351,7 +350,26 @@ months = st.sidebar.slider("Simulation Duration (Months)", 12, 120, 60, 12)
 # -------------------------------
 # Run Simulation and get results
 # -------------------------------
-df_month, df_year, total_sow_cost, shed_cost_val, first_sale_wc, total_pigs_sold, total_pigs_born, animals_left, cumulative_cash_flow_scalar, total_interest_paid, break_even_month, profit_after_break_even, average_monthly_profit, avg_profit_after_breakeven, total_crossings, roi_with_assets_pct, realized_cagr, roi_cash_pct = sow_rotation_simulator(
+(
+    df_month,
+    df_year,
+    total_sow_cost,
+    shed_cost_val,
+    first_sale_wc,
+    total_pigs_sold,
+    total_pigs_born,
+    animals_left,
+    cumulative_cash_flow_scalar,
+    total_interest_paid,
+    break_even_month,
+    profit_after_break_even,
+    average_monthly_profit,
+    avg_profit_after_breakeven,
+    total_crossings,
+    roi_with_assets_pct,
+    realized_cagr,
+    roi_cash_pct
+) = sow_rotation_simulator(
     total_sows,
     piglets_per_cycle,
     piglet_mortality_pct / 100.0,
@@ -386,15 +404,16 @@ df_month, df_year, total_sow_cost, shed_cost_val, first_sale_wc, total_pigs_sold
 # -------------------------------
 st.subheader("Simulation Results")
 
-st.write("Monthly Summary")
-st.dataframe(df_month.head(120))
+st.write("Monthly Summary (rounded for display)")
+st.dataframe(df_month.round(0).head(120))
 
 st.write("Yearly Summary")
-st.dataframe(df_year)
+st.dataframe(df_year.round(0))
 
 st.subheader("Financial Summary")
 initial_capital = shed_cost_val + total_sow_cost
 initial_investment = initial_capital + first_sale_wc
+
 st.write(f"Total Crossings Done: {total_crossings:,}")
 st.write(f"Total Pigs Born: {total_pigs_born:,}")
 st.write(f"Total Pigs Sold: {total_pigs_sold:,}")
@@ -415,12 +434,12 @@ st.write(f"Total Interest Paid Over Loan Tenure (approx): ₹{total_interest_pai
 
 # ROI & CAGR outputs
 st.write("---")
-st.write(f"ROI (cash only): {roi_cash_pct:.2f}%")
+st.write(f"ROI (cash-only): {roi_cash_pct:.2f}%  ( = (total cash inflows - initial investment) / initial investment )")
 st.write(f"ROI (Including asset liquidation): {roi_with_assets_pct:.2f}%")
 if math.isnan(realized_cagr):
     st.write("Realized CAGR: Not meaningful / NaN for these numbers")
 else:
-    st.write(f"Realized CAGR: {realized_cagr:.2f}%")
+    st.write(f"Realized CAGR (annual, cash-only): {realized_cagr:.2f}%")
 st.write("---")
 
 # -------------------------------
@@ -499,7 +518,11 @@ st.altair_chart(bar_chart, use_container_width=True)
 st.write("5) ROI & Realized CAGR Comparison")
 df_roi_cagr = pd.DataFrame({
     "Metric": ["ROI (cash only)", "ROI (incl. assets)", "Realized CAGR (ann.)"],
-    "Value": [roi_cash_pct, roi_with_assets_pct, realized_cagr if not math.isnan(realized_cagr) else None]
+    "Value": [
+        round(roi_cash_pct,2) if not math.isnan(roi_cash_pct) else None,
+        round(roi_with_assets_pct,2) if not math.isnan(roi_with_assets_pct) else None,
+        round(realized_cagr,2) if not math.isnan(realized_cagr) else None
+    ]
 })
 roi_chart = alt.Chart(df_roi_cagr).mark_bar().encode(
     x=alt.X("Metric:N"),
@@ -514,7 +537,6 @@ st.write("6) Cumulative ROI (cash only) & Realized CAGR (over time)")
 months_arr = df_month['Month']
 cumulative_roi_pct_over_time = ((df_month['Cumulative_Cash_Flow'] / initial_investment) * 100).fillna(0)
 
-cumulative_cash_only = ((-initial_investment) + df_month['Monthly_Cash_Flow'].cumsum())
 realized_cagr_over_time = []
 for i, m in enumerate(months_arr):
     yrs = (m / 12.0)
