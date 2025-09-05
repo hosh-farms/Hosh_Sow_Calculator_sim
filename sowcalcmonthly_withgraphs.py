@@ -1,6 +1,6 @@
-Got it — we can make everything as sliders, remove the “Run Simulation” button, and fix the cumulative cash flow so it correctly starts with -(initial capital + working capital) and then adds monthly cash flow.
+# Got it — we can make everything as sliders, remove the “Run Simulation” button, and fix the cumulative cash flow so it correctly starts with -(initial capital + working capital) and then adds monthly cash flow.
 
-Here’s the updated full code:
+# Here’s the updated full code:
 
 import streamlit as st
 import pandas as pd
