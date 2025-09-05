@@ -144,7 +144,7 @@ def sow_rotation_simulator(
 
         monthly_profit = revenue - total_operating_cost
         monthly_cash_flow = revenue - total_operating_cost - loan_payment
-        cumulative_cash_flow = cumulative_cash_flow + monthly_cash_flow + total_capital_invested
+        cumulative_cash_flow = cumulative_cash_flow + monthly_cash_flow 
 
         monthly_data.append({
             'Month': month,
