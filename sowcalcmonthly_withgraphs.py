@@ -277,8 +277,8 @@ def sow_rotation_simulator(
     
     # Start from -initial investment (shed + sows + working capital till first sale)
     initial_investment = shed_cost + total_sow_cost + first_sale_cash_needed
-   df_month["Cumulative_Cash_Flow"] = (-initial_investment + df_month["Monthly_Cash_Flow"].cumsum()).round(0)   # rounds to nearest rupee, you can change to .round(-3) for nearest 1,000
-
+    df_month["Cumulative_Cash_Flow"] = (-initial_investment + df_month["Monthly_Cash_Flow"].cumsum()).round(0)   # rounds to nearest rupee, you can change to .round(-3) for nearest 1,000
+    
     # Return everything needed by UI
     return (
         df_month, df_year, total_sow_cost, shed_cost, first_sale_cash_needed,
