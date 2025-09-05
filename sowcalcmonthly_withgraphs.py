@@ -262,8 +262,8 @@ def sow_rotation_simulator(
 
 
     
-    CAGR on realized cash flows
-    --- Realized CAGR on cash flows ---
+    # CAGR on realized cash flows
+    # --- Realized CAGR on cash flows ---
     initial_outflow = first_sale_cash_needed if first_sale_cash_needed > 0 else 1  # avoid zero
     final_inflow = cumulative_cash_flow + initial_outflow  # total cash in hand including initial outflow
     years = months / 12
