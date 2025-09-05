@@ -10,10 +10,10 @@ def sow_rotation_simulator(
     piglets_per_cycle=10,
     piglet_mortality=0.07,
     abortion_rate=0.0,
-    sow_feed_price=30,
-    sow_feed_intake=2.8,
-    grower_feed_price=30,
-    fcr=3.1,
+    sow_feed_price=32,
+    sow_feed_intake=2.7,
+    grower_feed_price=32,
+    fcr=3.0,
     final_weight=105,
     sale_price=180,
     management_fee=0,
@@ -93,7 +93,7 @@ def sow_rotation_simulator(
         # Count piglets in lactation
         piglets_with_sow = sum(batch['piglets'] for batch in batches if batch['farrow_month'] <= month < batch['wean_month'])
         # Count growers
-        current_growers = sum(batch['piglets'] for batch in batches if batch['grower_start_month'] <= month < batch['grower_end_month'])
+        current_growers = sum(batch['piglets'] for batch in batches if batch['grower_start_month'] < month < batch['grower_end_month'])
         # Calculate grower feed
         grower_feed_cost = sum(batch['grower_feed_per_month'] * grower_feed_price for batch in batches if batch['grower_start_month'] <= month < batch['grower_end_month'])
 
@@ -144,7 +144,7 @@ def sow_rotation_simulator(
 
         monthly_profit = revenue - total_operating_cost
         monthly_cash_flow = revenue - total_operating_cost - loan_payment
-        cumulative_cash_flow = cumulative_cash_flow + monthly_cash_flow
+        cumulative_cash_flow = cumulative_cash_flow + monthly_cash_flow + initial_capital
 
         monthly_data.append({
             'Month': month,
