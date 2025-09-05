@@ -263,7 +263,7 @@ def sow_rotation_simulator(
     initial_outflow = first_sale_cash_needed if first_sale_cash_needed > 0 else 1  # avoid zero
     final_inflow = cumulative_cash_flow + initial_outflow  # total cash in hand including initial outflow
     years = months / 12
-    realized_cagr = ((final_inflow / initial_outflow) ** (1/years) - 1) * 100 if initial_outflow > 0 else 0
+    realized_cagr = ((final_inflow / initial_outflow + total_capital) ** (1/years) - 1) * 100 if initial_outflow > 0 else 0
     return df_month, df_year, total_sow_cost, shed_cost, first_sale_cash_needed, total_pigs_sold, total_pigs_born, animals_left, cumulative_cash_flow, total_interest_paid, break_even_month, profit_after_break_even, average_monthly_profit, avg_profit_after_breakeven, total_crossings, roi_with_assets, realized_cagr, total_roi_pct
 # -------------------------------
 # Streamlit UI
