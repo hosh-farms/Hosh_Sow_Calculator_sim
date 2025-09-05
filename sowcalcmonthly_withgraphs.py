@@ -373,13 +373,11 @@ df_month, df_year, total_sow_cost, shed_cost_val, first_sale_wc, total_pigs_sold
 # -------------------------------
 st.subheader("Simulation Results")
 
-col1, col2 = st.columns([1, 1])
-with col1:
-    st.write("Monthly Summary (first 120 rows shown)")
-    st.dataframe(df_month.head(120))
-with col2:
-    st.write("Yearly Summary")
-    st.dataframe(df_year)
+st.write("Monthly Summary")
+st.dataframe(df_month.head(120))
+
+st.write("Yearly Summary")
+st.dataframe(df_year)
 
 st.subheader("Financial Summary")
 initial_capital = shed_cost_val + total_sow_cost
