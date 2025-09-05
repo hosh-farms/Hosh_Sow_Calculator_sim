@@ -212,5 +212,5 @@ st.write(f"Average Monthly Profit After Break-even: ₹{avg_profit_after_breakev
 st.write(f"ROI (Cash Only): {roi_cash_pct:.2f}%")
 st.write(f"Realized CAGR: {realized_cagr:.2f}%")
 
-✅ Key Fix:
-	•	`Cumulative_Cash_Flow = Initial Investment + Working Capital + cumulative(Monthly Profit -
+# ✅ Key Fix:
+# 	•	`Cumulative_Cash_Flow = Initial Investment + Working Capital + cumulative(Monthly Profit -
