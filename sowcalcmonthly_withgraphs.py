@@ -205,19 +205,19 @@ def sow_rotation_simulator(
     cash_series = df_month['Monthly_Cash_Flow'].astype(float).fillna(0.0)
 
     # cumulative working capital flow starts at -first_sale_cash_needed
-    cumulative_working_cap = (-initial_working_capital) + cash_series.cumsum()
+    # cumulative_working_cap = (-initial_working_capital) + cash_series.cumsum()
     # cumulative cash flow including capital starts at -(initial_capital + initial_working_capital)
     cumulative_cash_with_capital = (-(initial_capital + initial_working_capital)) + cash_series.cumsum()
     # cumulative profit excluding capital (monthly_profit cumulative)
     cumulative_profit_excl_capital = df_month['Monthly_Profit'].astype(float).cumsum()
 
     # add columns to df_month
-    df_month['Cumulative_Working_Capital_Flow'] = cumulative_working_cap.round(0)
+    # df_month['Cumulative_Working_Capital_Flow'] = cumulative_working_cap.round(0)
     df_month['Cumulative_Cash_Flow'] = cumulative_cash_with_capital.round(0)
     df_month['Cumulative_Profit'] = cumulative_profit_excl_capital.round(0)
 
     final_cumulative_cash_with_capital = float(cumulative_cash_with_capital.iloc[-1])
-    final_cumulative_working_cap = float(cumulative_working_cap.iloc[-1])
+    # final_cumulative_working_cap = float(cumulative_working_cap.iloc[-1])
     final_cumulative_profit = float(cumulative_profit_excl_capital.iloc[-1])
 
     # Final asset liquidation (estimate)
@@ -450,8 +450,8 @@ st.write("3) Cumulative Cash Flow (includes capital) & Cumulative Profit & Worki
 df_cum_plot = pd.DataFrame({
     "Month": df_month["Month"],
     "Cumulative Cash Flow (₹ Lakhs)": df_month["Cumulative_Cash_Flow"] / 1e5,
-    "Cumulative Profit (₹ Lakhs)": df_month["Cumulative_Profit"] / 1e5,
-    "Cumulative Working Capital Flow (₹ Lakhs)": df_month["Cumulative_Working_Capital_Flow"] / 1e5
+    "Cumulative Profit (₹ Lakhs)": df_month["Cumulative_Profit"] / 1e5
+    # "Cumulative Working Capital Flow (₹ Lakhs)": df_month["Cumulative_Working_Capital_Flow"] / 1e5
 })
 df_cum_melt = df_cum_plot.melt(id_vars=["Month"], var_name="Metric", value_name="Value")
 
