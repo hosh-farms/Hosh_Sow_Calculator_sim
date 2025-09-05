@@ -227,59 +227,35 @@ def sow_rotation_simulator(
 
 
     # For ROI calculation
-   # Instead of: total_cash_returned = cash_only.sum()
-    total_cash_returned = df_month['Monthly_Cash_Flow'].sum()
+   # -------------------------
+# SIMPLE CASH FLOW & ROI (no series, no cumsum)
+    # -------------------------
+   # --- ROI and CAGR calculations ---
 
-
+    # Initial investment = shed + sows + working capital until first sale
+    initial_investment = shed_cost + total_sow_cost + first_sale_cash_needed
     
-    # Cumulative Profit (excluding capital)
-    cumulative_profit = df_month['Monthly_Profit'].astype(float).cumsum()
+    # Total realized cash inflows (from operations only, no assets added back here)
+    total_cash_returned = df_month["Monthly_Cash_Flow"].clip(lower=0).sum()
     
-    # Add to dataframe (rounded)
-    # df_month['Cumulative_Cash_Flow'] = cumulative_cash_flow.round(0)
-    df_month['Cumulative_Profit'] = cumulative_profit.round(0)
-
-    final_cumulative_cash_flow = float(cumulative_cash_flow.iloc[-1])
-    # final_cumulative_working_cap = float(cumulative_working_cap.iloc[-1])
-    final_cumulative_profit = float(cumulative_profit.iloc[-1])
-
-    # Final asset liquidation (estimate)
-    shed_remaining_value = shed_cost * max(0.0, (shed_life_years*12 - months)/(shed_life_years*12))
-    sows_remaining_value = current_sows * sow_cost * max(0.0, (sow_life_years*12 - months)/(sow_life_years*12))
-    growers_remaining_value = animals_left * final_weight * sale_price   # rough market value
-
-    final_assets_value = shed_remaining_value + sows_remaining_value + growers_remaining_value
-
-    # ROI (cash only) = total cash returned / initial investment *100
-    total_cash_returned = cash_only.sum()
-    roi_cash_pct = (total_cash_returned / initial_investment) * 100 if initial_investment > 0 else float('nan')
-
-    # ROI including assets (liquidation)
-    roi_with_assets_pct = ((total_cash_returned + final_assets_value) / initial_investment) * 100 if initial_investment > 0 else float('nan')
-
-    # Realized CAGR on cash-only flows: money_multiple = total_cash_returned / initial_investment
-    years = months / 12.0
-    realized_cagr = float('nan')
-    if initial_investment > 0 and total_cash_returned > 0 and years > 0:
-        money_multiple = total_cash_returned / initial_investment
-        if money_multiple > 0:
-            realized_cagr = (money_multiple ** (1.0/years) - 1.0) * 100.0
-        else:
-            realized_cagr = float('nan')
-
-    # legacy total ROI (final cumulative cash with capital / initial_investment)
-    total_roi_pct_legacy = (final_cumulative_cash_flow / initial_investment) * 100 if initial_investment > 0 else float('nan')
-
-    # Break-even month (first month cumulative cash with capital >= 0)
-    be_idx = df_month[df_month['Cumulative_Cash_Flow'] >= 0].index
-    be_month = int(df_month.loc[be_idx[0], 'Month']) if len(be_idx) > 0 else None
-
-    total_crossings = int(df_month['Sows_Crossed'].sum()) if 'Sows_Crossed' in df_month.columns else 0
-    average_monthly_profit = df_month['Monthly_Profit'].mean() if len(df_month) > 0 else 0.0
-    avg_profit_after_breakeven = 0.0
-    if be_month:
-        rem = df_month.loc[df_month['Month'] >= be_month, 'Monthly_Profit']
-        avg_profit_after_breakeven = rem.mean() if not rem.empty else 0.0
+    # Final cumulative cash flow (net effect at the end)
+    cumulative_cash_flow_scalar = -initial_investment + total_cash_returned
+    
+    # ROI on cash (without asset values)
+    roi_cash_pct = (cumulative_cash_flow_scalar / initial_investment) * 100
+    
+    # ROI including final assets (shed value after depreciation, remaining sows, animals left)
+    roi_with_assets_pct = ((cumulative_cash_flow_scalar +
+                            (shed_cost * (1 - (months / (shed_life * 12)))) +
+                            (total_sow_cost * (1 - (months / (sow_life * 12)))) +
+                            animals_left) / initial_investment) * 100
+    
+    # Realized CAGR based on pure cash flows
+    years = months / 12
+    if cumulative_cash_flow_scalar > 0 and initial_investment > 0:
+        realized_cagr = ((cumulative_cash_flow_scalar + initial_investment) / initial_investment) ** (1 / years) - 1
+    else:
+        realized_cagr = 0
 
     return (
         df_month,
