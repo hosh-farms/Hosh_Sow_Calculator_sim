@@ -54,7 +54,7 @@ def sow_rotation_simulator(
     ready_for_sale_batches = []
     total_sow_cost = sow_cost * total_sows
     total_capital_invested = shed_cost + total_sow_cost
-    cumulative_cash_flow = 0
+    cumulative_cash_flow = -(total_capital_invested)
     total_pigs_born = 0
     total_pigs_sold = 0
 
