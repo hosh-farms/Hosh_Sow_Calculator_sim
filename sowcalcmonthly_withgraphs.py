@@ -203,6 +203,9 @@ def sow_rotation_simulator(
    # -------------------------
 # CUMULATIVE Cash Flow (fixed)
 # -------------------------
+   # -------------------------
+# CUMULATIVE Cash Flow & Profit
+    # -------------------------
     initial_capital = total_capital                       # shed + sows
     initial_working_capital = first_sale_cash_needed      # working capital required up front
     initial_investment = initial_capital + initial_working_capital
@@ -213,14 +216,16 @@ def sow_rotation_simulator(
     # Cumulative Cash Flow starts at negative total investment
     cumulative_cash_flow = -initial_investment + cash_series.cumsum()
     
+    # Cumulative Profit (excluding capital)
+    cumulative_profit = df_month['Monthly_Profit'].astype(float).cumsum()
+    
     # Add to dataframe (rounded)
     df_month['Cumulative_Cash_Flow'] = cumulative_cash_flow.round(0)
-
-    df_month['Cumulative_Profit'] = cumulative_profit_excl_capital.round(0)
+    df_month['Cumulative_Profit'] = cumulative_profit.round(0)
 
     final_cumulative_cash_flow = float(cumulative_cash_flow.iloc[-1])
     # final_cumulative_working_cap = float(cumulative_working_cap.iloc[-1])
-    final_cumulative_profit = float(cumulative_profit_excl_capital.iloc[-1])
+    final_cumulative_profit = float(cumulative_profit.iloc[-1])
 
     # Final asset liquidation (estimate)
     shed_remaining_value = shed_cost * max(0.0, (shed_life_years*12 - months)/(shed_life_years*12))
