@@ -263,6 +263,11 @@ def sow_rotation_simulator(
     else:
         avg_profit_after_breakeven = 0
 
+    # --- Calculate total crossings ---
+    if "Crossings" in df_month.columns:
+        total_crossings = df_month["Crossings"].sum()
+    else:
+        total_crossings = 0
 
 
     return (
