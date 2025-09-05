@@ -252,6 +252,8 @@ def sow_rotation_simulator(
         profit_after_break_even = df_month["Monthly_Cash_Flow"].iloc[break_even_month:].sum()
     else:
         profit_after_break_even = 0
+        
+    average_monthly_profit = df_month["Monthly_Cash_Flow"].mean()
 
 
     return (
