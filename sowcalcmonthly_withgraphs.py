@@ -258,26 +258,25 @@ def sow_rotation_simulator(
         realized_cagr = 0
 
     return (
-        df_month,
-        df_year,
-        total_sow_cost,
-        shed_cost,
-        first_sale_cash_needed,
-        total_pigs_sold,
-        total_pigs_born,
-        animals_left,
-        df_month['Cumulative_Cash_Flow'].iloc[-1],
-        total_interest_paid,
-        be_month,
-        profit_after_break_even if 'profit_after_break_even' in locals() else 0,
-        average_monthly_profit,
-        avg_profit_after_breakeven,
-        total_crossings,
-        roi_with_assets_pct,
-        realized_cagr,
-        roi_cash_pct
+    df_month,
+    df_year,
+    total_sow_cost,
+    shed_cost,
+    first_sale_wc,
+    total_pigs_sold,
+    total_pigs_born,
+    animals_left,
+    df_month['Cumulative_Cash_Flow'].iloc[-1],  # ✅ replaced final_cumulative_cash_flow
+    total_interest_paid,
+    break_even_month,
+    profit_after_break_even,
+    average_monthly_profit,
+    avg_profit_after_breakeven,
+    total_crossings,
+    roi_with_assets_pct,
+    realized_cagr,
+    roi_cash_pct
     )
-
 # -------------------------------
 # Streamlit UI
 # -------------------------------
