@@ -237,6 +237,16 @@ def sow_rotation_simulator(
     # else:
     #     realized_cagr = 0
 
+
+    # --- Break-even Month Calculation ---
+    break_even_month = None
+    running_cash = -initial_investment
+    for i, cash in enumerate(df_month["Monthly_Cash_Flow"]):
+        running_cash += cash
+        if running_cash >= 0:
+            break_even_month = i + 1  # +1 because months are 1-indexed
+            break
+
     return (
     df_month,
     df_year,
