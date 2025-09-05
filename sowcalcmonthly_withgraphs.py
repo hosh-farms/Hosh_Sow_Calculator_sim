@@ -227,7 +227,9 @@ def sow_rotation_simulator(
 
 
     # For ROI calculation
-    total_cash_returned = cash_only.sum()
+   # Instead of: total_cash_returned = cash_only.sum()
+    total_cash_returned = df_month['Monthly_Cash_Flow'].sum()
+
 
     
     # Cumulative Profit (excluding capital)
