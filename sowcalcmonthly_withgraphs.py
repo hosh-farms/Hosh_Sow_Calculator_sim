@@ -1,14 +1,14 @@
-Okay — I understand your frustration. Let’s do this once and for all, full code, fully working, keeping all columns, calculations, plots, summaries, only fixing cumulative cash flow using your logic:
+# Okay — I understand your frustration. Let’s do this once and for all, full code, fully working, keeping all columns, calculations, plots, summaries, only fixing cumulative cash flow using your logic:
 
-Logic:
+# Logic:
 
-Cumulative Cash Flow = Initial Capital + Working Capital till first sale + cumulative (Monthly Profit - Loan EMI)
+# Cumulative Cash Flow = Initial Capital + Working Capital till first sale + cumulative (Monthly Profit - Loan EMI)
 
-Everything else remains exactly as before.
+# Everything else remains exactly as before.
 
-Here’s the complete code:
+# Here’s the complete code:
 
-# streamlit run sowcalc_final_full.py
+# # streamlit run sowcalc_final_full.py
 
 import streamlit as st
 import pandas as pd
