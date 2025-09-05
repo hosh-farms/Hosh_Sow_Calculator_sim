@@ -266,7 +266,7 @@ def sow_rotation_simulator(
         total_pigs_sold,
         total_pigs_born,
         animals_left,
-        final_cumulative_cash_flow,
+        df_month['Cumulative_Cash_Flow'].iloc[-1],,
         total_interest_paid,
         be_month,
         profit_after_break_even if 'profit_after_break_even' in locals() else 0,
