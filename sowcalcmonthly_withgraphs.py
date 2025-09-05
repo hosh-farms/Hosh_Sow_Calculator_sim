@@ -248,7 +248,7 @@ def sow_rotation_simulator(
     final_assets_value = shed_remaining_value + sows_remaining_value + growers_remaining_value
     
     # ROI including final assets
-    roi_with_assets = ((cumulative_cash_flow + final_assets_value) / total_capital - 1) * 100 if total_capital > 0 else 0
+    roi_with_assets = ((cumulative_cash_flow + final_assets_value) / (total_capital + first_sale_cash_needed) - 1) * 100 if total_capital > 0 else 0
     
     # Identify first and last cash flow (realized)
     realized_cash = df_month['Cumulative_Cash_Flow']
@@ -258,7 +258,7 @@ def sow_rotation_simulator(
     # Calculate number of years over realized period
     years_realized = (df_month.at[last_idx, 'Month'] - df_month.at[first_idx, 'Month'] + 1) / 12
     years = months / 12
-    # realized_cagr = ((cumulative_cash_flow + total_capital_invested/ total_capital_invested + first_sale_cash_needed) ** (1 / years)) - 1
+    realized_cagr = ((cumulative_cash_flow + total_capital + first_sale_cash_needed / total_capital + first_sale_cash_needed) ** (1 / years)) - 1
 
 
     
