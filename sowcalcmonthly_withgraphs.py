@@ -200,7 +200,9 @@ def sow_rotation_simulator(
     # -------------------------
     # -------------------------
 # CUMULATIVE Cash Flow (fixed)
-    # -------------------------
+   # -------------------------
+# CUMULATIVE Cash Flow (fixed)
+# -------------------------
     initial_capital = total_capital                       # shed + sows
     initial_working_capital = first_sale_cash_needed      # working capital required up front
     initial_investment = initial_capital + initial_working_capital
@@ -214,12 +216,9 @@ def sow_rotation_simulator(
     # Add to dataframe (rounded)
     df_month['Cumulative_Cash_Flow'] = cumulative_cash_flow.round(0)
 
-    # add columns to df_month
-    # df_month['Cumulative_Working_Capital_Flow'] = cumulative_working_cap.round(0)
-    df_month['Cumulative_Cash_Flow'] = cumulative_cash_with_capital.round(0)
     df_month['Cumulative_Profit'] = cumulative_profit_excl_capital.round(0)
 
-    final_cumulative_cash_with_capital = float(cumulative_cash_with_capital.iloc[-1])
+    final_cumulative_cash_flow = float(cumulative_cash_flow.iloc[-1])
     # final_cumulative_working_cap = float(cumulative_working_cap.iloc[-1])
     final_cumulative_profit = float(cumulative_profit_excl_capital.iloc[-1])
 
@@ -248,7 +247,7 @@ def sow_rotation_simulator(
             realized_cagr = float('nan')
 
     # legacy total ROI (final cumulative cash with capital / initial_investment)
-    total_roi_pct_legacy = (final_cumulative_cash_with_capital / initial_investment) * 100 if initial_investment > 0 else float('nan')
+    total_roi_pct_legacy = (final_cumulative_cash_flow / initial_investment) * 100 if initial_investment > 0 else float('nan')
 
     # Break-even month (first month cumulative cash with capital >= 0)
     be_idx = df_month[df_month['Cumulative_Cash_Flow'] >= 0].index
@@ -270,7 +269,7 @@ def sow_rotation_simulator(
         total_pigs_sold,
         total_pigs_born,
         animals_left,
-        final_cumulative_cash_with_capital,
+        final_cumulative_cash_flow,
         total_interest_paid,
         be_month,
         profit_after_break_even if 'profit_after_break_even' in locals() else 0,
