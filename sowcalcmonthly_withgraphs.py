@@ -336,7 +336,7 @@ months = st.sidebar.slider("Simulation Duration (Months)", 12, 120, 60, 12)
 # -------------------------------
 # Run Simulation and get results
 # -------------------------------
-df_month, df_year, total_sow_cost, shed_cost_val, first_sale_wc, total_pigs_sold, total_pigs_born, animals_left, cumulative_cash_flow_scalar, total_interest_paid, break_even_month, profit_after_break_even, average_monthly_profit, avg_profit_after_breakeven, total_crossings, roi_with_assets_pct, realized_cagr, roi_cash_pct = sow_rotation_simulator(
+df_month, df_year, total_sow_cost, shed_cost_val, first_sale_cash_needed, total_pigs_sold, total_pigs_born, animals_left, cumulative_cash_flow_scalar, total_interest_paid, break_even_month, profit_after_break_even, average_monthly_profit, avg_profit_after_breakeven, total_crossings, roi_with_assets_pct, realized_cagr, roi_cash_pct = sow_rotation_simulator(
     total_sows,
     piglets_per_cycle,
     piglet_mortality_pct / 100.0,
