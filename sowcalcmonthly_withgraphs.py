@@ -195,22 +195,25 @@ def sow_rotation_simulator(
             loan_payment = 0
         total_interest_paid += monthly_interest
 
+
+    
   # ----- Initial Investment -----
     total_sow_cost = total_sows * sow_cost   # sow
     shed_cost_val = shed_cost
     first_sale_cash_needed = 0.0  # replace with your working capital calc
 
-    initial_investment = shed_cost_val + total_sow_cost + first_sale_cash_needed  
-
-    # ✅ Initial cumulative cash flow (scalar, no cumsum)
-    cumulative_cash_flow = -initial_investment
-
-
- # ----- Dummy Monthly & Yearly DataFrames -----
-    df_month = pd.DataFrame({
-        "Month": range(1, months + 1),
-        "Monthly_Cash_Flow": [0] * months  # replace with your monthly logic
-    })
+    # Initial investment = sow cost + shed cost + first-sale working capital
+    initial_investment = total_sow_cost + shed_cost + first_sale_cash_needed  
+    
+    # Calculate cumulative cash flow correctly
+    cumulative_cash_flow = [-initial_investment]
+    for val in df_month["Net_Cash"]:
+        cumulative_cash_flow.append(cumulative_cash_flow[-1] + val)
+    
+    # Drop the first dummy element
+    cumulative_cash_flow = cumulative_cash_flow[1:]
+    df_month["Cumulative_Cash_Flow"] = cumulative_cash_flow
+    
     df_year = df_month.groupby((df_month["Month"] - 1) // 12).sum()
 
     # ----- Totals -----
