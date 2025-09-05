@@ -209,18 +209,22 @@ def sow_rotation_simulator(
 
     # Cash flow for ROI & cumulative (exclude loan inflows)
 
-    initial_capital = shed_cost + total_sow_cost           # ~23L
-    initial_working_capital = first_sale_cash_needed      # ~0–few L
+    # initialize cumulative cash flow
+
+    initial_capital = shed_cost + total_sow_cost           
+    initial_working_capital = first_sale_cash_needed      
     
-    initial_investment = initial_capital + initial_working_capital
-    # Cash series for cumulative calculation
-    cash_only = df_month['Monthly_Cash_Flow'].astype(float).fillna(0.0)
+    cumulative_cash_flow = -initial_capital - initial_working_capital
+    cumulative_cash_flow_list = []
     
-    # Cumulative Cash Flow including initial investment
-    cumulative_cash_flow = -initial_investment + cash_only.cumsum()
+    for month_idx, row in df_month.iterrows():
+        monthly_cash = row['Monthly_Cash_Flow']
+        cumulative_cash_flow += monthly_cash      # add monthly cash
+        cumulative_cash_flow_list.append(round(cumulative_cash_flow, 0))
     
-    # Assign to DataFrame
-    df_month['Cumulative_Cash_Flow'] = cumulative_cash_flow.round(0)
+    # assign directly to DataFrame
+    df_month['Cumulative_Cash_Flow'] = cumulative_cash_flow_list
+
 
     # For ROI calculation
     total_cash_returned = cash_only.sum()
