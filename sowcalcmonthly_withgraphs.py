@@ -206,15 +206,22 @@ def sow_rotation_simulator(
    # -------------------------
 # CUMULATIVE Cash Flow & Profit
     # -------------------------
+
+    # Cash flow for ROI & cumulative (exclude loan inflows)
+
     initial_capital = shed_cost + total_sow_cost           # ~23L
     initial_working_capital = first_sale_cash_needed      # ~0–few L
     
     initial_investment = initial_capital + initial_working_capital
     
-    cash_only = df_month['Revenue'] - df_month['Total_Operating_Cost']
-    
+    ccash_only = df_month['Revenue'] - df_month['Total_Operating_Cost']  # monthly cash without loan
+
+    # Cumulative Cash Flow starts at -initial_investment (capital + working capital)
     cumulative_cash_flow = -initial_investment + cash_only.cumsum()
-    # Cash flow excluding loan disbursement
+    
+    # For ROI calculation
+    total_cash_returned = cash_only.sum()
+
     
     # Cumulative Profit (excluding capital)
     cumulative_profit = df_month['Monthly_Profit'].astype(float).cumsum()
@@ -235,7 +242,7 @@ def sow_rotation_simulator(
     final_assets_value = shed_remaining_value + sows_remaining_value + growers_remaining_value
 
     # ROI (cash only) = total cash returned / initial investment *100
-    total_cash_returned = cash_series.sum()
+    total_cash_returned = cash_only.sum()
     roi_cash_pct = (total_cash_returned / initial_investment) * 100 if initial_investment > 0 else float('nan')
 
     # ROI including assets (liquidation)
