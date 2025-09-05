@@ -212,6 +212,7 @@ def sow_rotation_simulator(
     
     # Drop the first dummy element
     cumulative_cash_flow = cumulative_cash_flow[1:]
+    
     df_month["Cumulative_Cash_Flow"] = cumulative_cash_flow
     
     df_year = df_month.groupby((df_month["Month"] - 1) // 12).sum()
@@ -227,10 +228,9 @@ def sow_rotation_simulator(
     realized_cagr = ((final_cumulative_cash_flow + initial_investment) / initial_investment) ** (1 / years) - 1
 
     # ROI including final assets (shed value after depreciation, remaining sows, animals left)
-    roi_with_assets_pct = ((cumulative_cash_flow +
-                            (shed_cost * (1 - (months / (shed_life_years * 12)))) +
-                            (total_sow_cost * (1 - (months / (sow_life_years * 12)))) +
-                            animals_left) / initial_investment) * 100
+        roi_with_assets_pct = (
+        (df_month['Cumulative_Cash_Flow'].iloc[-1] +(shed_cost * (1 - (months / (shed_life_years * 12)))) + (total_sow_cost * (1 - (months / (sow_life_years * 12)))) + animals_left * piglet_price) / (shed_cost + total_sow_cost + first_sale_cash_needed) - 1) * 100
+
 
 
     # # Realized CAGR based on pure cash flows
