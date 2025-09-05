@@ -258,7 +258,7 @@ def sow_rotation_simulator(
     # Calculate number of years over realized period
     years_realized = (df_month.at[last_idx, 'Month'] - df_month.at[first_idx, 'Month'] + 1) / 12
     years = months / 12
-    realized_cagr = ((cumulative_cash_flow / first_sale_cash_needed + total_capital_invested) ** (1 / years)) - 1
+    realized_cagr = ((cumulative_cash_flow + total_capital_invested/ total_capital_invested + first_sale_cash_needed) ** (1 / years)) - 1
 
 
     
