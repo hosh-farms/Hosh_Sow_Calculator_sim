@@ -272,6 +272,12 @@ def sow_rotation_simulator(
     # Average monthly profit (overall)
     average_monthly_profit  = df_month['Monthly_Profit'].mean()
     average_monthly_profit_after_loan  = df_month['Monthly_Cash_Flow'].mean()
+    # Existing cumulative cash flow
+    df_month["Cumulative_Cash_Flow"] = df_month["Monthly_Cash_Flow"].cumsum()
+    
+    # Start from -initial investment (shed + sows + working capital till first sale)
+    initial_investment = shed_cost + total_sow_cost + first_sale_cash_needed
+    df_month["Cumulative_Cash_Flow"] = -initial_investment + df_month["Cumulative_Cash_Flow"]
 
     # Return everything needed by UI
     return (
