@@ -144,7 +144,7 @@ def sow_rotation_simulator(
 
         monthly_profit = revenue - total_operating_cost
         monthly_cash_flow = revenue - total_operating_cost - loan_payment
-        cumulative_cash_flow = cumulative_cash_flow + monthly_cash_flow + initial_capital
+        cumulative_cash_flow = cumulative_cash_flow + monthly_cash_flow + total_capital_invested
 
         monthly_data.append({
             'Month': month,
@@ -258,7 +258,7 @@ def sow_rotation_simulator(
     # Calculate number of years over realized period
     years_realized = (df_month.at[last_idx, 'Month'] - df_month.at[first_idx, 'Month'] + 1) / 12
     years = months / 12
-    realized_cagr = ((cumulative_cash_flow / first_sale_cash_needed) ** (1 / years)) - 1
+    realized_cagr = ((cumulative_cash_flow / first_sale_cash_needed + total_capital_invested) ** (1 / years)) - 1
 
 
     
