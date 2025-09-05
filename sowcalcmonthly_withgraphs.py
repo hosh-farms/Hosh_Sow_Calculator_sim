@@ -211,9 +211,11 @@ def sow_rotation_simulator(
     
     initial_investment = initial_capital + initial_working_capital
     
-    # Cumulative Cash Flow starts at -initial_investment
-    cumulative_cash_flow = -initial_investment + df_month['Monthly_Cash_Flow'].cumsum()
-
+    cash_only = df_month['Revenue'] - df_month['Total_Operating_Cost']
+    
+    cumulative_cash_flow = -initial_investment + cash_only.cumsum()
+    # Cash flow excluding loan disbursement
+    
     # Cumulative Profit (excluding capital)
     cumulative_profit = df_month['Monthly_Profit'].astype(float).cumsum()
     
