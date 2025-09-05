@@ -206,16 +206,14 @@ def sow_rotation_simulator(
    # -------------------------
 # CUMULATIVE Cash Flow & Profit
     # -------------------------
-    initial_capital = total_capital                       # shed + sows
-    initial_working_capital = first_sale_cash_needed      # working capital required up front
+    initial_capital = shed_cost + total_sow_cost           # ~23L
+    initial_working_capital = first_sale_cash_needed      # ~0–few L
+    
     initial_investment = initial_capital + initial_working_capital
     
-    # Cash series: monthly cash flow (revenue - operating costs - loan payment)
-    cash_series = df_month['Monthly_Cash_Flow'].astype(float).fillna(0.0)
-    
-    # Cumulative Cash Flow starts at negative total investment
-    cumulative_cash_flow = -initial_investment + cash_series.cumsum()
-    
+    # Cumulative Cash Flow starts at -initial_investment
+    cumulative_cash_flow = -initial_investment + df_month['Monthly_Cash_Flow'].cumsum()
+
     # Cumulative Profit (excluding capital)
     cumulative_profit = df_month['Monthly_Profit'].astype(float).cumsum()
     
