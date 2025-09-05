@@ -255,6 +255,15 @@ def sow_rotation_simulator(
         
     average_monthly_profit = df_month["Monthly_Cash_Flow"].mean()
 
+        # --- Calculate Average Profit After Break-Even ---
+    if break_even_month is not None and break_even_month < len(df_month):
+        profit_after_breakeven= df_month.loc[break_even_month:, "Profit"].sum()
+        months_after_breakeven = len(df_month) - break_even_month
+        avg_profit_after_breakeven = profit_after_breakeven / months_after_breakeven if months_after_breakeven > 0 else 0
+    else:
+        avg_profit_after_breakeven = 0
+
+
 
     return (
     df_month,
