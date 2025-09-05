@@ -207,7 +207,7 @@ def sow_rotation_simulator(
     
     # Calculate cumulative cash flow correctly
     cumulative_cash_flow = [-initial_investment]
-    for val in df_month["Net_Cash"]:
+    for val in df_month["Monthly_Cash_Flow"]:
         cumulative_cash_flow.append(cumulative_cash_flow[-1] + val)
     
     # Drop the first dummy element
