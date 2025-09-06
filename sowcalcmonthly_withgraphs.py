@@ -215,7 +215,7 @@ def sow_rotation_simulator(
         # ROI including remaining assets
     remaining_shed_value = shed_cost * (1 - months / (shed_life_years * 12))
     remaining_sow_value = total_sow_cost * (1 - months / (sow_life_years * 12))
-    remaining_animals_value = animals_left * final_weight * sale_price  # approximate value of remaining pigs
+    remaining_animals_value = animals_left * 12000  # approximate value of remaining pigs
     roi_with_assets_pct = ((final_cumulative_cash_flow + remaining_shed_value + remaining_sow_value + remaining_animals_value) / initial_investment - 1) * 100
 
     # Total crossings (optional)
@@ -380,7 +380,7 @@ st.write(f"Total Interest Paid Over Loan Tenure (approx): ₹{total_interest_pai
 
 # ROI & CAGR outputs
 st.write("---")
-st.write(f"ROI (Cash Only): {roi_cash_pct:.2f}%")
+st.write(f"ROI : {roi_cash_pct:.2f}%")
 st.write(f"ROI (Including asset liquidation): {roi_with_assets_pct:.2f}%")
 if math.isnan(realized_cagr):
     st.write("Realized CAGR: Not meaningful / NaN for these numbers")
