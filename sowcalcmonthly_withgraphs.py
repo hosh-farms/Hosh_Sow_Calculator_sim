@@ -1,6 +1,6 @@
-Perfect. I understand the level of precision you want: all columns preserved, cumulative cash flow fixed, all calculations correct, sliders in sidebar, plots included, no input boxes, everything ready-to-run.
+# Perfect. I understand the level of precision you want: all columns preserved, cumulative cash flow fixed, all calculations correct, sliders in sidebar, plots included, no input boxes, everything ready-to-run.
 
-Here’s the complete, fully corrected Streamlit code:
+# Here’s the complete, fully corrected Streamlit code:
 
 # -------------------------------
 # House of Supreme Ham Simulator - Complete Streamlit App
