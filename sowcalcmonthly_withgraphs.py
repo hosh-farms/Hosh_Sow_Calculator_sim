@@ -370,71 +370,60 @@ st.write("---")
 # -------------------------------
 st.subheader("Simulation Plots")
 
-# 1) Revenue vs Total Costs
-cost_components = ["Sow_Feed_Cost", "Grower_Feed_Cost", "Staff_Cost", "Other_Fixed_Costs", "Mgmt_Fee", "Mgmt_Comm", "Loan_EMI"]
-df_plot1 = df_month.loc[df_month['Month'] <= 24, ["Month"] + cost_components + ["Revenue"]].copy()
-df_costs_melt = df_plot1[["Month"] + cost_components].melt(id_vars="Month", var_name="Cost Component", value_name="Value")
-area_chart = alt.Chart(df_costs_melt).mark_area(opacity=0.7).encode(
-    x="Month:O",
-    y="Value:Q",
-    color="Cost Component:N",
-    tooltip
 # -------------------------------
+# Prepare cost data for plots
+# -------------------------------
+cost_components = ["Sow_Feed_Cost", "Grower_Feed_Cost", "Staff_Cost",
+                   "Other_Fixed_Costs", "Mgmt_Fee", "Mgmt_Comm", "Loan_EMI"]
+
 # Plot 1: Revenue vs Total Costs (Stacked Area)
-# -------------------------------
+df_plot1 = df_month[["Month"] + cost_components + ["Revenue"]].copy()
+df_costs_melt = df_plot1.melt(id_vars="Month", value_vars=cost_components, 
+                              var_name="Cost Component", value_name="Value")
+
 area_chart = alt.Chart(df_costs_melt).mark_area(opacity=0.7).encode(
-    x="Month:O",
-    y="Value:Q",
-    color="Cost Component:N",
+    x=alt.X("Month:O", title="Month"),
+    y=alt.Y("Value:Q", title="Amount (₹)"),
+    color=alt.Color("Cost Component:N"),
     tooltip=["Month", "Cost Component", "Value"]
-).properties(
-    width=700,
-    height=400,
-    title="Monthly Cost Components (Stacked) vs Revenue"
-)
+).properties(height=360)
 
 revenue_line = alt.Chart(df_plot1).mark_line(color="black", strokeWidth=2).encode(
-    x="Month:O",
-    y="Revenue:Q",
+    x=alt.X("Month:O"),
+    y=alt.Y("Revenue:Q"),
     tooltip=["Month", "Revenue"]
 )
 
+st.subheader("1) Revenue vs Total Costs (Stacked Area)")
 st.altair_chart(area_chart + revenue_line, use_container_width=True)
 
-# -------------------------------
 # Plot 2: Monthly Profit
-# -------------------------------
-st.subheader("Monthly Profit")
+st.subheader("2) Monthly Profit")
 profit_chart = alt.Chart(df_month).mark_bar(color="green").encode(
-    x="Month:O",
-    y="Monthly_Profit:Q",
+    x=alt.X("Month:O", title="Month"),
+    y=alt.Y("Monthly_Profit:Q", title="Profit (₹)"),
     tooltip=["Month", "Monthly_Profit"]
-).properties(width=700, height=400, title="Monthly Profit (Revenue - Total Costs)")
+).properties(height=360)
 st.altair_chart(profit_chart, use_container_width=True)
 
-# -------------------------------
 # Plot 3: Cumulative Cash Flow
-# -------------------------------
-st.subheader("Cumulative Cash Flow")
+st.subheader("3) Cumulative Cash Flow")
 cum_cash_chart = alt.Chart(df_month).mark_line(color="blue", strokeWidth=3).encode(
-    x="Month:O",
-    y="Cumulative_Cash_Flow:Q",
+    x=alt.X("Month:O", title="Month"),
+    y=alt.Y("Cumulative_Cash_Flow:Q", title="Cumulative Cash Flow (₹)"),
     tooltip=["Month", "Cumulative_Cash_Flow"]
-).properties(width=700, height=400, title="Cumulative Cash Flow (Including Initial Capital + Working Capital)")
+).properties(height=360)
 st.altair_chart(cum_cash_chart, use_container_width=True)
 
-# -------------------------------
-# Plot 4: Total Costs by Component (Stacked) over Simulation
-# -------------------------------
-st.subheader("Cost Breakdown Over Time")
-df_costs_total_melt = df_month[["Month"] + cost_components].melt(id_vars="Month", var_name="Cost Component", value_name="Value")
+# Plot 4: Total Costs by Component over Simulation
+st.subheader("4) Total Costs by Component Over Time")
+df_costs_total_melt = df_month[["Month"] + cost_components].melt(
+    id_vars="Month", var_name="Cost Component", value_name="Value"
+)
 cost_chart = alt.Chart(df_costs_total_melt).mark_area(opacity=0.6).encode(
-    x="Month:O",
-    y="Value:Q",
-    color="Cost Component:N",
+    x=alt.X("Month:O"),
+    y=alt.Y("Value:Q"),
+    color=alt.Color("Cost Component:N"),
     tooltip=["Month", "Cost Component", "Value"]
-).properties(width=700, height=400, title="Cost Components Over Time")
+).properties(height=360)
 st.altair_chart(cost_chart, use_container_width=True)
-
-
-    
