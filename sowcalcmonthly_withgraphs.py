@@ -379,9 +379,6 @@ area_chart = alt.Chart(df_costs_melt).mark_area(opacity=0.7).encode(
     y="Value:Q",
     color="Cost Component:N",
     tooltip
-
-    Perfect — here’s the continuation with all 4 plots included, exactly as before:
-
 # -------------------------------
 # Plot 1: Revenue vs Total Costs (Stacked Area)
 # -------------------------------
