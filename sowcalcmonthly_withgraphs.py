@@ -209,10 +209,10 @@ def sow_rotation_simulator(
     # Cash-only CAGR
     years = months / 12
     final_cash = cumulative_cash_flow[-1] + initial_investment  # net cash returned
-    realized_cagr = (final_cash / initial_investment) ** (1 / years) - 1
+    realized_cagr = (final_cash / (first_sale_cash_needed + initial_investment)) ** (1 / years) - 1
 
     # ROI / CAGR
-    final_cumulative_cash_flow = cumulative_cash_flow[-1] + initial_investment + first_sale_cash_needed
+    # final_cumulative_cash_flow = cumulative_cash_flow[-1] + initial_investment + first_sale_cash_needed
     roi_cash_pct = ((cumulative_cash_flow[-1]) / (first_sale_cash_needed + initial_investment)) * 100
     years = months / 12
     # realized_cagr = (final_cumulative_cash_flow) / first_sale_cash_needed + initial_investment ** (1/years) - 1
