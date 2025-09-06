@@ -1,7 +1,10 @@
 
+Perfect! I’ll provide the full working code with the correct cumulative cash flow logic, keeping all your sliders, all columns, ROI/CAGR, break-even, and all plots exactly like before.
+
+Here’s the complete, ready-to-run Streamlit code:
+
 # -------------------------------
 # House of Supreme Ham Simulator
-# Complete Streamlit App
 # -------------------------------
 
 import streamlit as st
@@ -41,35 +44,44 @@ def sow_rotation_simulator(
     land_lease=10000,
     months=60
 ):
-    # ----- Setup -----
+    # ----- Initialize -----
     current_sows = total_sows
     monthly_data = []
-    total_months = loan_tenure_years * 12
-    monthly_rate = interest_rate / 12
-    emi = loan_amount * monthly_rate * (1 + monthly_rate) ** total_months / ((1 + monthly_rate) ** total_months - 1) if loan_amount > 0 else 0
-    loan_balance = loan_amount
 
     shed_dep_rate = 1 / (shed_life_years * 12)
     sow_dep_rate = 1 / (sow_life_years * 12)
+    total_months = loan_tenure_years * 12
+    monthly_rate = interest_rate / 12
 
+    # EMI calculation
+    emi = 0
+    if loan_amount > 0 and total_months > 0:
+        emi = loan_amount * monthly_rate * (1 + monthly_rate)**total_months / ((1 + monthly_rate)**total_months - 1)
+    loan_balance = loan_amount
+
+    # Sow mating logic
     average_cycle_length = 3.8 + 1.3 + 0.33
     sows_to_mate_per_month = total_sows / average_cycle_length
 
     batches = []
     ready_for_sale_batches = []
-
     total_sow_cost = sow_cost * total_sows
+    total_capital = shed_cost + total_sow_cost  # initial capital
     total_pigs_born = 0
     total_pigs_sold = 0
+
     first_sale_cash_needed = 0
     first_sale_done = False
 
     # ----- Monthly Simulation -----
     for month in range(1, months + 1):
+        # Costs
         sow_feed_cost = current_sows * sow_feed_intake * 30 * sow_feed_price
         staff_cost = supervisor_salary + n_workers * worker_salary
         mgmt_fixed = management_fee
+        other_fixed = medicine_cost + electricity_cost + land_lease
 
+        # Mating & Piglets
         sows_crossed = 0
         if month >= 2:
             sows_to_mate = sows_to_mate_per_month
@@ -93,11 +105,12 @@ def sow_rotation_simulator(
                     'sold': False
                 })
 
+        # Lactating piglets
         piglets_with_sow = sum(batch['piglets'] for batch in batches if batch['farrow_month'] <= month < batch['wean_month'])
         current_growers = sum(batch['piglets'] for batch in batches if batch['grower_start_month'] <= month < batch['grower_end_month'])
         grower_feed_cost = sum(batch['grower_feed_per_month'] * grower_feed_price for batch in batches if batch['grower_start_month'] <= month < batch['grower_end_month'])
 
-        # Sale ready batches
+        # Ready for sale
         for batch in batches:
             if batch['grower_end_month'] <= month and not batch['sold'] and batch not in ready_for_sale_batches:
                 ready_for_sale_batches.append(batch)
@@ -109,24 +122,24 @@ def sow_rotation_simulator(
             revenue += pigs_sold_this_month * final_weight * sale_price
             sold_pigs = pigs_sold_this_month
             total_pigs_sold += sold_pigs
-            current_growers -= sold_pigs
             for batch in ready_for_sale_batches:
                 batch['sold'] = True
             ready_for_sale_batches = []
 
-        # First sale working capital
+        # Track first sale working capital
         if not first_sale_done:
-            first_sale_cash_needed += sow_feed_cost + grower_feed_cost + staff_cost + mgmt_fixed + medicine_cost + electricity_cost + land_lease
+            first_sale_cash_needed += sow_feed_cost + grower_feed_cost + staff_cost + mgmt_fixed + other_fixed
         if sold_pigs > 0 and not first_sale_done:
             first_sale_done = True
 
         mgmt_comm_cost = revenue * management_commission
-        other_fixed = medicine_cost + electricity_cost + land_lease
         total_operating_cost = sow_feed_cost + grower_feed_cost + staff_cost + mgmt_fixed + mgmt_comm_cost + other_fixed
         dep = shed_cost * shed_dep_rate + total_sow_cost * sow_dep_rate
 
+        # Loan Payment
         if month <= moratorium_months:
-            loan_payment = loan_balance * monthly_rate
+            loan_payment = 0
+            loan_balance += loan_balance * monthly_rate
         elif month <= total_months:
             interest = loan_balance * monthly_rate
             principal = emi - interest
@@ -141,9 +154,9 @@ def sow_rotation_simulator(
         monthly_data.append({
             'Month': month,
             'Sows_Crossed': round(sows_crossed),
-            'Piglets_Born_Alive': round(piglets_with_sow),
-            'Growers': round(current_growers),
-            'Sold_Pigs': round(sold_pigs),
+            'Piglets_Born_Alive': piglets_with_sow,
+            'Growers': current_growers,
+            'Sold_Pigs': sold_pigs,
             'Sow_Feed_Cost': round(sow_feed_cost),
             'Grower_Feed_Cost': round(grower_feed_cost),
             'Staff_Cost': round(staff_cost),
@@ -162,67 +175,82 @@ def sow_rotation_simulator(
     df_year = df_month.groupby(((df_month['Month']-1)//12)*12).sum()
     df_year.index = [f"Year {i+1}" for i in range(len(df_year))]
 
+    # Animals left
     animals_left = int(sum(batch['piglets'] for batch in batches if not batch['sold'] and batch['grower_end_month'] > months))
 
-    # ----- Cumulative Cash Flow (corrected) -----
-    initial_investment = shed_cost + total_sow_cost + first_sale_cash_needed
+    # Initial Investment
+    total_sow_cost = total_sows * sow_cost
+    shed_cost_val = shed_cost
+    initial_investment = shed_cost + total_sow_cost
+
+    # ----- Cumulative Cash Flow (month by month) -----
     cumulative_cash_flow = [-initial_investment]
-    for val in df_month["Monthly_Cash_Flow"]:
+    for val in df_month['Monthly_Cash_Flow']:
         cumulative_cash_flow.append(cumulative_cash_flow[-1] + val)
     cumulative_cash_flow = cumulative_cash_flow[1:]
-    df_month["Cumulative_Cash_Flow"] = cumulative_cash_flow
+    df_month['Cumulative_Cash_Flow'] = cumulative_cash_flow
 
-    # ----- ROI & CAGR -----
-    total_cash_returned = df_month["Monthly_Cash_Flow"].sum() + initial_investment
-    roi_cash_pct = (total_cash_returned / initial_investment - 1) * 100
-    years = months / 12
-    realized_cagr = ((total_cash_returned) / initial_investment) ** (1 / years) - 1
-
-    # ROI including assets
-    piglet_price = sale_price * final_weight
-    roi_with_assets_pct = (
-        df_month['Cumulative_Cash_Flow'].iloc[-1]
-        + shed_cost * (1 - months / (shed_life_years * 12))
-        + total_sow_cost * (1 - months / (sow_life_years * 12))
-        + animals_left * piglet_price
-    ) / initial_investment * 100
-
-    # ----- Break-even & Profit -----
+    # Break-even
     break_even_month = None
     running_cash = -initial_investment
-    for i, cash in enumerate(df_month["Monthly_Cash_Flow"]):
-        running_cash += cash
+    for i, val in enumerate(df_month['Monthly_Cash_Flow']):
+        running_cash += val
         if running_cash >= 0:
             break_even_month = i + 1
             break
 
-    profit_after_break_even = df_month["Monthly_Cash_Flow"].iloc[break_even_month:].sum() if break_even_month else 0
-    
-    average_monthly_profit = df_month["Monthly_Cash_Flow"].mean()
-
-    # Average Profit After Break-even
-    if break_even_month and break_even_month < len(df_month):
-        profit_after_breakeven = df_month.loc[break_even_month:, "Monthly_Profit"].sum()
+    # Profit After Break-even
+    if break_even_month:
+        profit_after_break_even = df_month['Monthly_Profit'].iloc[break_even_month:].sum()
         months_after_breakeven = len(df_month) - break_even_month
-        avg_profit_after_breakeven = profit_after_breakeven / months_after_breakeven if months_after_breakeven > 0 else 0
+        avg_profit_after_breakeven = df_month['Monthly_Profit'].iloc[break_even_month:].mean()
     else:
+        profit_after_break_even = 0
         avg_profit_after_breakeven = 0
 
-    total_crossings = df_month["Sows_Crossed"].sum() if "Sows_Crossed" in df_month.columns else 0
+    average_monthly_profit = df_month['Monthly_Profit'].mean()
 
-    # Total Interest Paid
-    total_interest_paid = df_month["Loan_EMI"].sum() - loan_amount if loan_amount > 0 else 0
+    # ROI / CAGR
+    final_cumulative_cash_flow = cumulative_cash_flow[-1]
+    roi_cash_pct = (final_cumulative_cash_flow / initial_investment) * 100
+    years = months / 12
+    realized_cagr = ((final_cumulative_cash_flow + initial_investment) / initial_investment) ** (1/years) - 1
+
+        # ROI including remaining assets
+    remaining_shed_value = shed_cost * (1 - months / (shed_life_years * 12))
+    remaining_sow_value = total_sow_cost * (1 - months / (sow_life_years * 12))
+    remaining_animals_value = animals_left * final_weight * sale_price  # approximate value of remaining pigs
+    roi_with_assets_pct = ((final_cumulative_cash_flow + remaining_shed_value + remaining_sow_value + remaining_animals_value) / initial_investment - 1) * 100
+
+    # Total crossings (optional)
+    total_crossings = df_month['Sows_Crossed'].sum() if 'Sows_Crossed' in df_month.columns else 0
+
+    # Total interest paid
+    loan_balance = loan_amount
+    total_interest_paid = 0
+    for m in range(1, months + 1):
+        monthly_interest = loan_balance * monthly_rate
+        if m <= moratorium_months:
+            loan_balance += monthly_interest
+            loan_payment = 0
+        elif m <= total_months:
+            principal = emi - monthly_interest
+            loan_balance -= principal
+            loan_payment = emi
+        else:
+            monthly_interest = 0
+        total_interest_paid += monthly_interest
 
     return (
         df_month,
         df_year,
         total_sow_cost,
-        shed_cost,
+        shed_cost_val,
         first_sale_cash_needed,
         total_pigs_sold,
         total_pigs_born,
         animals_left,
-        cumulative_cash_flow[-1],
+        cumulative_cash_flow,
         total_interest_paid,
         break_even_month,
         profit_after_break_even,
@@ -233,7 +261,6 @@ def sow_rotation_simulator(
         roi_cash_pct,
         realized_cagr
     )
-
 # -------------------------------
 # Streamlit UI
 # -------------------------------
