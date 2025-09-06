@@ -349,15 +349,15 @@ chart5 = alt.Chart(df_costs).mark_bar().encode(
 )
 st.altair_chart(chart5, use_container_width=True)
 
-✅ This version:
-	•	Preserves all monthly columns exactly.
-	•	Correctly calculates Cumulative Cash Flow starting with -initial investment + working capital until first sale + monthly profits - EMI.
-	•	Includes ROI, CAGR, Total Cash Returned.
-	•	Displays monthly and yearly tables.
-	•	Shows 4 interactive Altair plots.
-	•	Uses only sliders in sidebar — no input boxes.
+# ✅ This version:
+# 	•	Preserves all monthly columns exactly.
+# 	•	Correctly calculates Cumulative Cash Flow starting with -initial investment + working capital until first sale + monthly profits - EMI.
+# 	•	Includes ROI, CAGR, Total Cash Returned.
+# 	•	Displays monthly and yearly tables.
+# 	•	Shows 4 interactive Altair plots.
+# 	•	Uses only sliders in sidebar — no input boxes.
 
-⸻
+# ⸻
 
 If you want, I can also make the cumulative cash flow show a separate running total including first-sale working capital explicitly, so the chart visually starts negative and reaches break-even naturally — this is often clearer for presentations.
 
