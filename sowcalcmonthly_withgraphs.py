@@ -212,8 +212,8 @@ def sow_rotation_simulator(
     realized_cagr = (final_cash / (first_sale_cash_needed + initial_investment)) ** (1 / years) - 1
 
     # ROI / CAGR
-    # final_cumulative_cash_flow = cumulative_cash_flow[-1] + initial_investment + first_sale_cash_needed
-    roi_cash_pct = ((cumulative_cash_flow[-1]) / (first_sale_cash_needed + initial_investment)) * 100
+    final_cumulative_cash_flow = cumulative_cash_flow[-1]
+    roi_cash_pct = (final_cumulative_cash_flow) / (first_sale_cash_needed + initial_investment)) * 100
     years = months / 12
     # realized_cagr = (final_cumulative_cash_flow) / first_sale_cash_needed + initial_investment ** (1/years) - 1
 
@@ -221,7 +221,7 @@ def sow_rotation_simulator(
     remaining_shed_value = shed_cost * (1 - months / (shed_life_years * 12))
     remaining_sow_value = total_sow_cost * (1 - months / (sow_life_years * 12))
     remaining_animals_value = animals_left * 12000  # approximate value of remaining pigs
-    roi_with_assets_pct = ((final_cumulative_cash_flow + remaining_shed_value + remaining_sow_value + remaining_animals_value) / initial_investment - 1) * 100
+    roi_with_assets_pct = ((final_cumulative_cash_flow + remaining_shed_value + remaining_sow_value + remaining_animals_value) / (first_sale_cash_needed + initial_investment - 1)) * 100
 
     # Total crossings (optional)
     total_crossings = df_month['Sows_Crossed'].sum() if 'Sows_Crossed' in df_month.columns else 0
