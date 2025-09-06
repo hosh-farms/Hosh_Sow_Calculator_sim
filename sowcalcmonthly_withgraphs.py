@@ -1,8 +1,4 @@
 
-Perfect! I’ll provide the full working code with the correct cumulative cash flow logic, keeping all your sliders, all columns, ROI/CAGR, break-even, and all plots exactly like before.
-
-Here’s the complete, ready-to-run Streamlit code:
-
 # -------------------------------
 # House of Supreme Ham Simulator
 # -------------------------------
