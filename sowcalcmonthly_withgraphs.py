@@ -207,6 +207,7 @@ def sow_rotation_simulator(
     average_monthly_profit = df_month['Monthly_Profit'].mean()
 
     # Cash-only CAGR
+    years = months / 12
     final_cash = cumulative_cash_flow[-1] + initial_investment  # net cash returned
     realized_cagr = (final_cash / initial_investment) ** (1 / years) - 1
 
