@@ -177,7 +177,7 @@ def sow_rotation_simulator(
     # Initial Investment
     total_sow_cost = total_sows * sow_cost
     shed_cost_val = shed_cost
-    initial_investment = shed_cost + total_sow_cost
+    initial_investment = shed_cost + total_sow_cost 
 
     # ----- Cumulative Cash Flow (month by month) -----
     cumulative_cash_flow = [-initial_investment]
@@ -208,7 +208,7 @@ def sow_rotation_simulator(
 
     # ROI / CAGR
     final_cumulative_cash_flow = cumulative_cash_flow[-1]
-    roi_cash_pct = (final_cumulative_cash_flow / initial_investment) * 100
+    roi_cash_pct = ((final_cumulative_cash_flow + first_sale_cash_needed) / initial_investment) * 100
     years = months / 12
     realized_cagr = ((final_cumulative_cash_flow + initial_investment) / initial_investment) ** (1/years) - 1
 
