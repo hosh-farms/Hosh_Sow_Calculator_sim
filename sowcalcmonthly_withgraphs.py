@@ -5,6 +5,7 @@
 # -------------------------------
 # House of Supreme Ham Simulator - Complete Streamlit App
 # -------------------------------
+
 import streamlit as st
 import pandas as pd
 import math
@@ -212,7 +213,7 @@ def sow_rotation_simulator(
     + shed_cost * (1 - months / (shed_life_years * 12))
     + total_sow_cost * (1 - months / (sow_life_years * 12))
     + animals_left * piglet_price
-) / initial_investment * 100
+    ) / initial_investment * 100
 
   # Absolutely — here’s the rest of the code, fully completed with plots, summary, and Streamlit UI. This keeps all columns, cumulative cash flow fixed, sliders only, and everything ready-to-run.
 
