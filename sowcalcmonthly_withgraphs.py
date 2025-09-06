@@ -443,15 +443,3 @@ cum_cash_chart = alt.Chart(df_month).mark_line(color="blue", strokeWidth=3).enco
 ).properties(height=360)
 st.altair_chart(cum_cash_chart, use_container_width=True)
 
-# Plot 4: Total Costs by Component over Simulation
-st.subheader("4) Total Costs by Component Over Time")
-df_costs_total_melt = df_month[["Month"] + cost_components].melt(
-    id_vars="Month", var_name="Cost Component", value_name="Value"
-)
-cost_chart = alt.Chart(df_costs_total_melt).mark_area(opacity=0.6).encode(
-    x=alt.X("Month:O"),
-    y=alt.Y("Value:Q"),
-    color=alt.Color("Cost Component:N"),
-    tooltip=["Month", "Cost Component", "Value"]
-).properties(height=360)
-st.altair_chart(cost_chart, use_container_width=True)
