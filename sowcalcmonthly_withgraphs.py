@@ -214,7 +214,7 @@ def sow_rotation_simulator(
     final_cumulative_cash_flow = cumulative_cash_flow[-1] + initial_investment + first_sale_cash_needed
     roi_cash_pct = ((cumulative_cash_flow[-1]) / (first_sale_cash_needed + initial_investment)) * 100
     years = months / 12
-    realized_cagr = (final_cumulative_cash_flow) / first_sale_cash_needed + initial_investment) ** (1/years) - 1
+    realized_cagr = (final_cumulative_cash_flow) / first_sale_cash_needed + initial_investment ** (1/years) - 1
 
         # ROI including remaining assets
     remaining_shed_value = shed_cost * (1 - months / (shed_life_years * 12))
